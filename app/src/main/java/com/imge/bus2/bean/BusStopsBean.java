@@ -1,6 +1,6 @@
 package com.imge.bus2.bean;
 
-public class BusDetailsBean {
+public class BusStopsBean {
     /**
      * Id : 2130
      * routeId : 5022
