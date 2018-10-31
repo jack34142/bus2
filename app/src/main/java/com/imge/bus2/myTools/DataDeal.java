@@ -44,6 +44,9 @@ public class DataDeal {
             }
 
             MyLog.setIsDownload(context);
+            synchronized (MainActivity.downloadObj) {
+                MainActivity.downloadObj.notify();
+            }
 
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
