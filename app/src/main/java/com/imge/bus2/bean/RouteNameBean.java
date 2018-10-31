@@ -17,7 +17,7 @@ public class RouteNameBean {
      * MasterRouteDesc : RG
      */
 
-    private String ID;
+    private String ID;      // routeId
     private String nameZh;      // 編號
     private String ddesc;       // 中文名
 

@@ -8,6 +8,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.MyVolley;
+import com.imge.bus2.sharedPreferences.MyRouteName;
+
+import java.util.Map;
+import java.util.Set;
 
 public class DataDownload {
     Context context;
@@ -16,7 +20,7 @@ public class DataDownload {
     public DataDownload(Context context) {
         super();
         this.context = context;
-        dataDeal = new DataDeal();
+        dataDeal = new DataDeal(context);
     }
 
     // 下載 route 的 id, 編號, 中文名
@@ -41,12 +45,19 @@ public class DataDownload {
 
     // 下載 去返程stop 的 中文名, 經度, 緯度
     public void getBusStops(){
-        String url = "http://apidata.tycg.gov.tw/OPD-io/bus4/GetStop.json?routeIds=5022";
+        Map<String, String> myRouteName = MyRouteName.getRouteName(context);
+        Set<String> routeIds_set = myRouteName.keySet();
+        String routeIds = routeIds_set.toString();
+        routeIds = routeIds.substring(1,routeIds.length()-1);
+        routeIds = routeIds.replace(", ",",");
+//        Log.d("DataDownload test", routeIds);
+
+        String url = "http://apidata.tycg.gov.tw/OPD-io/bus4/GetStop.json?routeIds=" + routeIds;
 
         StringRequest request = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                dataDeal.dealBusDetails(response);       // 解析 json
+                dataDeal.dealBusStops(response);       // 解析 json
             }
         }, new Response.ErrorListener() {
             @Override

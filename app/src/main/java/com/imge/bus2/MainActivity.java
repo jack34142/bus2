@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.imge.bus2.myTools.DataDownload;
+import com.imge.bus2.sharedPreferences.MyLog;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
 
         DataDownload dataDownload = new DataDownload(MainActivity.this);
 //        dataDownload.getBusStops();
+//        if(!MyLog.getIsDownload(MainActivity.this)){
+//            dataDownload.getRouteName();
+//        }
         dataDownload.getRouteName();
+        dataDownload.getBusStops();
     }
 }
