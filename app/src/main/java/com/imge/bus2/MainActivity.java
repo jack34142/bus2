@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DataDownload dataDownload = new DataDownload(MainActivity.this);
-        dataDownload.getBusDetails();
+//        dataDownload.getBusStops();
+        dataDownload.getRouteName();
     }
 }
