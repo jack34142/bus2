@@ -70,6 +70,8 @@ public class DataDeal {
 //                Log.d("DataDeal test", busStopsBean.getRouteId());
             }
 
+            organizeBusStops(list);
+
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
             e.printStackTrace();
@@ -80,9 +82,14 @@ public class DataDeal {
 
         Map<String, String> map = new HashMap<>();
 
+        BusStopsBean busStopsBean;
         int len_list = list.size();
         for (int i=0; i<len_list; i++){
-
+            busStopsBean = list.get(i);
+            MapTools.getInstance().setMark(
+                    busStopsBean.getNameZh(),
+                    Double.parseDouble(busStopsBean.getLatitude()),
+                    Double.parseDouble(busStopsBean.getLongitude()) );
         }
     }
 
