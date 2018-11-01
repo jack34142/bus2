@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 //        dataDownload.getBusStops();
     }
 
+    // 檢查有沒有下載過必要資料
     private void setDownloadThread(){
 
             new Thread(new Runnable() {
