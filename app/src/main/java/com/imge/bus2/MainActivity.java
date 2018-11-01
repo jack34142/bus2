@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.SupportMapFragment;
 import com.imge.bus2.myTools.DataDownload;
+import com.imge.bus2.myTools.MapTools;
 import com.imge.bus2.sharedPreferences.MyLog;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,9 +20,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dataDownload = new DataDownload(MainActivity.this);
+        setMap();
         setDownloadThread();
-//        dataDownload.getRouteName();
-//        dataDownload.getBusStops();
     }
 
     // 檢查有沒有下載過必要資料
@@ -49,6 +50,14 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }).start();
+    }
+
+    // 啟用 map
+    private void setMap(){
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(MapTools.getInstance());
     }
 
 }
