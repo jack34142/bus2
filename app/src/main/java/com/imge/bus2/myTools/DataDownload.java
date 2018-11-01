@@ -43,7 +43,7 @@ public class DataDownload {
         MyVolley.getInstance(context).addToRequestQue(request);
     }
 
-    // 下載 去返程stop 的 中文名, 經度, 緯度
+    // 下載 去+返程stop 的 經過的路線, 中文名, 經度, 緯度
     public void getBusStops(){
         Map<String, String> myRouteName = MyRouteName.getRouteName(context);
         Set<String> routeIds_set = myRouteName.keySet();

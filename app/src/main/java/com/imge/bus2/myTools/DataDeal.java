@@ -14,7 +14,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataDeal {
     Context context;
@@ -54,7 +56,7 @@ public class DataDeal {
         }
     }
 
-    // 解析 json 得到 去返程stop 的 中文名, 經度, 緯度
+    // 解析 json 得到 去+返程stop 的 經過的路線, 中文名, 經度, 緯度
     public void dealBusStops(String response){
         try{
             BusStopsBean busStopsBean = new BusStopsBean();
@@ -71,6 +73,16 @@ public class DataDeal {
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
             e.printStackTrace();
+        }
+    }
+
+    private void organizeBusStops(List<BusStopsBean> list){
+
+        Map<String, String> map = new HashMap<>();
+
+        int len_list = list.size();
+        for (int i=0; i<len_list; i++){
+
         }
     }
 
