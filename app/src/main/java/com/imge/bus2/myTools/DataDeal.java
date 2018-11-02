@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.imge.bus2.MainActivity;
 import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.RouteNameBean;
+import com.imge.bus2.model.MyFileIO;
+import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.sharedPreferences.MyLog;
 import com.imge.bus2.sharedPreferences.MyRouteName;
 
@@ -15,8 +17,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class DataDeal {
     Context context;
@@ -45,7 +49,7 @@ public class DataDeal {
                 MyRouteName.setRouteName(context, list);
             }
 
-            MyLog.setIsDownload(context);
+            Log.d("DataDeal", "dealRouteName() 下載完成");
             synchronized (MainActivity.downloadObj) {
                 MainActivity.downloadObj.notify();
             }
@@ -80,17 +84,84 @@ public class DataDeal {
 
     private void organizeBusStops(List<BusStopsBean> list){
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, List> map = new HashMap<>();
+
+    /*
+                List value
+                index = 0 >> routeIds ( List<String> )
+                index = 1 >> latitude ( Double )
+                index = 2 >> longitude ( Double )
+         */
+        List value;
+        Set<String> routeIds;
 
         BusStopsBean busStopsBean;
         int len_list = list.size();
-        for (int i=0; i<len_list; i++){
+        for (int i=0; i<len_list; i++) {
             busStopsBean = list.get(i);
-            MapTools.getInstance().setMark(
-                    busStopsBean.getNameZh(),
-                    Double.parseDouble(busStopsBean.getLatitude()),
-                    Double.parseDouble(busStopsBean.getLongitude()) );
+
+            int j = 1;
+            String stopName = busStopsBean.getNameZh() + j;
+            while (map.containsKey(stopName)) {
+                value = map.get(stopName);
+                Double lat_old = (Double) value.get(1);
+                Double lon_old = (Double) value.get(2);
+                Double lat_new = Double.parseDouble(busStopsBean.getLatitude());
+                Double lon_new = Double.parseDouble(busStopsBean.getLongitude());
+                // 每一經緯度 約 100公里
+                Double distance = Math.abs(Math.pow(lat_old - lat_new, 2) + Math.pow(lon_old - lon_new, 2)) * 100 * 1000;
+
+//                Log.d("DataDeal test", distance.toString());
+                if (distance < 50) {
+                    routeIds = (Set<String>) value.get(0);
+                    routeIds.add(busStopsBean.getRouteId());
+                    value.set(0, routeIds);
+                    map.put(stopName, value);
+                    break;
+                } else {
+                    j++;
+                    stopName = busStopsBean.getNameZh() + j;
+                    continue;
+                }
+            }
+
+            if (!map.containsKey(stopName)) {
+                value = new ArrayList();
+                routeIds  = new HashSet<>();
+
+                routeIds.add(busStopsBean.getRouteId());
+                value.add(routeIds);
+                value.add(Double.parseDouble(busStopsBean.getLatitude()));
+                value.add(Double.parseDouble(busStopsBean.getLongitude()));
+                map.put(stopName, value);
+            }
         }
+
+        JSONArray jsonArray = new JSONArray();
+        try{
+            for(String stopName : map.keySet()){
+                value = map.get(stopName);
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("stopName", stopName);
+                jsonObject.put("latitude", (Double)value.get(1));
+                jsonObject.put("longitude", (Double)value.get(2));
+                jsonObject.put("routeIds", ((Set<String>)value.get(0)).toString() );
+                jsonArray.put(jsonObject);
+            }
+        }catch (Exception e){
+            Log.e("DataDeal", "organizeBusStops 製作 json 失敗");
+            e.printStackTrace();
+        }
+
+        BusStopDAO busStopDAO = new BusStopDAO(context);
+        busStopDAO.insert(map);
+
+        Log.d("DataDeal", "organizeBusStops() 下載完成");
+        MyLog.setIsDownload(context);
+        synchronized (MainActivity.downloadObj) {
+            MainActivity.downloadObj.notify();
+        }
+
     }
 
 
