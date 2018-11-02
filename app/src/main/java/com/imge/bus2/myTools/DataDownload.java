@@ -16,6 +16,7 @@ import java.util.Set;
 public class DataDownload {
     Context context;
     DataDeal dataDeal;
+    StringRequest request;
 
     public DataDownload(Context context) {
         super();
@@ -27,7 +28,7 @@ public class DataDownload {
     public void getRouteName(){
         String url = "https://data.tycg.gov.tw/opendata/datalist/datasetMeta/download?id=d7a0513d-1a91-4ae6-a06f-fbf83190ab2a&rid=8cbcf170-8641-4a0d-8fe8-256a36f4c6cb";
 
-        StringRequest request = new StringRequest(url, new Response.Listener<String>() {
+        request = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 dataDeal.dealRouteName(response);       // 解析 json
@@ -37,6 +38,7 @@ public class DataDownload {
             public void onErrorResponse(VolleyError error) {
                 Log.e("DataDownload", "getBusStops() 下載 json 失敗");
                 error.printStackTrace();
+                MyVolley.getInstance(context).addToRequestQue(request);
             }
         });
 
@@ -54,7 +56,7 @@ public class DataDownload {
 
         String url = "http://apidata.tycg.gov.tw/OPD-io/bus4/GetStop.json?routeIds=" + routeIds;
 
-        StringRequest request = new StringRequest(url, new Response.Listener<String>() {
+        request = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 dataDeal.dealBusStops(response);       // 解析 json
@@ -64,6 +66,7 @@ public class DataDownload {
             public void onErrorResponse(VolleyError error) {
                 Log.e("DataDownload", "getBusStops() 下載 json 失敗");
                 error.printStackTrace();
+                MyVolley.getInstance(context).addToRequestQue(request);
             }
         });
 
