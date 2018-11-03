@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.imge.bus2.model.MyFileIO;
 import com.imge.bus2.mySQLite.BusStopDAO;
+import com.imge.bus2.mySQLite.MyDBHelper;
 import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
 import com.imge.bus2.sharedPreferences.MyLog;
@@ -30,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
         setMap();
         setHandler();
         setDownloadThread();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        MyDBHelper.closeDB();
     }
 
     // 檢查有沒有下載過必要資料
