@@ -58,9 +58,10 @@ public class DataDeal {
             routeNameDAO.insert(map);
 
             Log.d("DataDeal", "dealRouteName() 下載完成");
-            synchronized (MainActivity.downloadObj) {
-                MainActivity.downloadObj.notify();
-            }
+            MainActivity.downloadThread.interrupt();
+//            synchronized (MainActivity.downloadObj) {
+//                MainActivity.downloadObj.notify();
+//            }
 
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
@@ -83,6 +84,12 @@ public class DataDeal {
             }
 
             organizeBusStops(list);
+            Log.d("DataDeal", "organizeBusStops() 下載完成");
+            MyLog.setIsDownload(context);
+            MainActivity.handler.sendEmptyMessage(0);
+//            synchronized (MainActivity.downloadObj) {
+//                MainActivity.downloadObj.notify();
+//            }
 
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
@@ -163,12 +170,6 @@ public class DataDeal {
 
         BusStopDAO busStopDAO = new BusStopDAO(context);
         busStopDAO.insert(map);
-
-        Log.d("DataDeal", "organizeBusStops() 下載完成");
-        MyLog.setIsDownload(context);
-        synchronized (MainActivity.downloadObj) {
-            MainActivity.downloadObj.notify();
-        }
 
     }
 

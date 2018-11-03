@@ -30,8 +30,13 @@ public class DataDownload {
 
         request = new StringRequest(url, new Response.Listener<String>() {
             @Override
-            public void onResponse(String response) {
-                dataDeal.dealRouteName(response);       // 解析 json
+            public void onResponse(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataDeal.dealRouteName(response);       // 解析 json
+                    }
+                }).start();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -59,8 +64,13 @@ public class DataDownload {
 
         request = new StringRequest(url, new Response.Listener<String>() {
             @Override
-            public void onResponse(String response) {
-                dataDeal.dealBusStops(response);       // 解析 json
+            public void onResponse(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataDeal.dealBusStops(response);       // 解析 json
+                    }
+                }).start();
             }
         }, new Response.ErrorListener() {
             @Override
