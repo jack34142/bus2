@@ -4,41 +4,34 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BusStopDAO{
+public class RouteNameDAO {
 
     // 資料庫物件
     private SQLiteDatabase db;
     // 編號表格欄位名稱，固定不變
     public static final String KEY_ID = "_id";
     // 表格名稱
-    public static final String TABLE_NAME = "bus_stop";
+    public static final String TABLE_NAME = "route_name";
 
     // 其它表格欄位名稱
-    public static final String STOPNAME_COLUMN = "stop_name";
-    public static final String LATITUDE_COLUMN = "latitude";
-    public static final String LONGITUDE_COLUMN = "longitude";
-    public static final String ROUTEIDS_COLUMN = "route_ids";
+    public static final String ROUTEID_COLUMN = "route_id";
+    public static final String ROUTENAME_COLUMN = "route_name";
 
     public static final String CREATE_TABLE =
             "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
                     KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    STOPNAME_COLUMN + " TEXT, " +
-                    LATITUDE_COLUMN + " TEXT, " +
-                    LONGITUDE_COLUMN + " TEXT, " +
-                    ROUTEIDS_COLUMN + " TEXT)";
+                    ROUTEID_COLUMN + " TEXT, " +
+                    ROUTENAME_COLUMN + " TEXT)";
 
     // 建構子，一般的應用都不需要修改
-    public BusStopDAO(Context context) {
+    public RouteNameDAO(Context context) {
         db = MyDBHelper.getDatabase(context);
     }
 
@@ -49,7 +42,7 @@ public class BusStopDAO{
         }
     }
 
-    public void insert(Map<String, List> map){
+    public void insert(Map<String, String> map){
         // 建立準備新增資料的ContentValues物件
         ContentValues cv = new ContentValues();
 
@@ -59,15 +52,12 @@ public class BusStopDAO{
          */
         db.beginTransaction();
         boolean isSuccess = true;
-        for(String stopName : map.keySet()){
-            List value = map.get(stopName);
+        for(String routeId : map.keySet()){
 
             // 加入ContentValues物件包裝的新增資料
             // 第一個參數是欄位名稱， 第二個參數是欄位的資料
-            cv.put(STOPNAME_COLUMN, stopName);
-            cv.put(LATITUDE_COLUMN, value.get(1).toString());
-            cv.put(LONGITUDE_COLUMN, value.get(2).toString());
-            cv.put(ROUTEIDS_COLUMN, ((Set<String>)value.get(0)).toString() );
+            cv.put(ROUTEID_COLUMN, routeId);
+            cv.put(ROUTENAME_COLUMN, map.get(routeId) );
 
             // 新增一筆資料，回傳值為 id ( id < 0 失敗)
             // 第一個參數是表格名稱
@@ -85,7 +75,7 @@ public class BusStopDAO{
 
     }
 
-    public void update(Map<String, List> map){
+    public void update(Map<String, String> map){
         // 建立準備新增資料的ContentValues物件
         ContentValues cv = new ContentValues();
 
@@ -95,19 +85,16 @@ public class BusStopDAO{
          */
         db.beginTransaction();
         boolean isSuccess = true;
-        for(String stopName : map.keySet()){
-            List value = map.get(stopName);
+        for(String routeId : map.keySet()){
 
             // 加入ContentValues物件包裝的新增資料
             // 第一個參數是欄位名稱， 第二個參數是欄位的資料
-            cv.put(STOPNAME_COLUMN, stopName);
-            cv.put(LATITUDE_COLUMN, value.get(1).toString());
-            cv.put(LONGITUDE_COLUMN, value.get(2).toString());
-            cv.put(ROUTEIDS_COLUMN, ((Set<String>)value.get(0)).toString() );
+            cv.put(ROUTEID_COLUMN, routeId);
+            cv.put(ROUTENAME_COLUMN, map.get(routeId) );
 
             // 設定修改資料的條件
             // 格式為「欄位名稱＝資料」
-            String where = STOPNAME_COLUMN + "=\""  + stopName + "\"";
+            String where = ROUTEID_COLUMN + "=\""  + routeId + "\"";
 
             // 新增一筆資料，回傳值為 id ( id < 0 失敗)
             // 第一個參數是表格名稱
@@ -125,15 +112,16 @@ public class BusStopDAO{
 
     }
 
-    public void delete(String stopName){
+
+    public void delete(String routeId){
         // 設定條件，格式為「欄位名稱=資料」
-        String where = STOPNAME_COLUMN + "=\""  + stopName + "\"";
+        String where = ROUTEID_COLUMN + "=\""  + routeId + "\"";
         // 刪除指定編號資料並回傳刪除是否成功
         db.delete(TABLE_NAME, where , null);
     }
 
-    public Map<String, List> getAll(){
-        Map<String, List> map = new HashMap<>();
+    public Map<String, String> getAll(){
+        Map<String, String> map = new HashMap<>();
 
         Cursor cursor = db.query(
                 TABLE_NAME,
@@ -148,18 +136,19 @@ public class BusStopDAO{
 
         // 如果有查詢結果
         while (cursor.moveToNext()) {
-            String stopName = cursor.getString(cursor.getColumnIndex(STOPNAME_COLUMN));
-            map.put(stopName, setList(cursor));
+            map.put(
+                    cursor.getString(cursor.getColumnIndex(ROUTEID_COLUMN)),
+                    cursor.getString(cursor.getColumnIndex(ROUTENAME_COLUMN))
+            );
         }
 
         cursor.close();
         return map;
     }
 
-    public List get(String stopName){
-        List list = new ArrayList();
+    public String get(String routeId){
 
-        String where = STOPNAME_COLUMN + "=\""  + stopName + "\"";
+        String where = ROUTEID_COLUMN + "=\""  + routeId + "\"";
         // 執行查詢
         Cursor cursor = db.query(
                 TABLE_NAME,
@@ -175,27 +164,11 @@ public class BusStopDAO{
         // 如果有查詢結果
         if (cursor.moveToFirst()) {
             // 讀取包裝一筆資料的物件
-            list = setList(cursor);
+            return cursor.getString(cursor.getColumnIndex(ROUTENAME_COLUMN));
         }
 
         cursor.close();
-        return list;
-
+        return "";
     }
-
-    public List setList(Cursor cursor){
-        List list = new ArrayList();
-
-        String routeIds = cursor.getString(cursor.getColumnIndex(ROUTEIDS_COLUMN));
-        Set<String> set = new HashSet<>(Arrays.asList(routeIds));
-        list.add(set);
-        list.add( Double.parseDouble(cursor.getString(cursor.getColumnIndex(LATITUDE_COLUMN))) );
-        list.add( Double.parseDouble(cursor.getString(cursor.getColumnIndex(LONGITUDE_COLUMN))) );
-
-        return list;
-    }
-
-
-
 
 }

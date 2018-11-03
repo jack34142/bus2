@@ -8,7 +8,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.MyVolley;
-import com.imge.bus2.sharedPreferences.MyRouteName;
+import com.imge.bus2.mySQLite.RouteNameDAO;
 
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +47,8 @@ public class DataDownload {
 
     // 下載 去+返程stop 的 經過的路線, 中文名, 經度, 緯度
     public void getBusStops(){
-        Map<String, String> myRouteName = MyRouteName.getRouteName(context);
+        RouteNameDAO routeNameDAO = new RouteNameDAO(context);
+        Map<String, String> myRouteName = routeNameDAO.getAll();
         Set<String> routeIds_set = myRouteName.keySet();
         String routeIds = routeIds_set.toString();
         routeIds = routeIds.substring(1,routeIds.length()-1);

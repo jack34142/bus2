@@ -9,8 +9,8 @@ import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.RouteNameBean;
 import com.imge.bus2.model.MyFileIO;
 import com.imge.bus2.mySQLite.BusStopDAO;
+import com.imge.bus2.mySQLite.RouteNameDAO;
 import com.imge.bus2.sharedPreferences.MyLog;
-import com.imge.bus2.sharedPreferences.MyRouteName;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class DataDeal {
     // 解析 json 得到 route 的 id, 編號, 中文名
     public void dealRouteName(String response){
         try{
-            RouteNameBean routeNameBean = new RouteNameBean();
+            RouteNameBean routeNameBean;
             List<RouteNameBean> list = new ArrayList<>();
 
             JSONObject jsonObject = new JSONObject(response);
@@ -45,9 +45,17 @@ public class DataDeal {
                 routeNameBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), RouteNameBean.class);
                 list.add(routeNameBean);
 //                Log.d("DataDeal test", routeNameBean.getDdesc());
-
-                MyRouteName.setRouteName(context, list);
             }
+
+            Map<String, String> map = new HashMap<>();
+            int list_len = list.size();
+            for(int i=0; i<list_len; i++){
+                routeNameBean = list.get(i);
+                map.put(routeNameBean.getID(), routeNameBean.getNameZh()+" "+routeNameBean.getDdesc());
+            }
+
+            RouteNameDAO routeNameDAO = new RouteNameDAO(context);
+            routeNameDAO.insert(map);
 
             Log.d("DataDeal", "dealRouteName() 下載完成");
             synchronized (MainActivity.downloadObj) {
@@ -63,7 +71,7 @@ public class DataDeal {
     // 解析 json 得到 去+返程stop 的 經過的路線, 中文名, 經度, 緯度
     public void dealBusStops(String response){
         try{
-            BusStopsBean busStopsBean = new BusStopsBean();
+            BusStopsBean busStopsBean;
             List<BusStopsBean> list = new ArrayList<>();
 
             JSONArray jsonArray = new JSONArray(response);
