@@ -4,23 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.model.MyVolley;
 import com.imge.bus2.mySQLite.RouteNameDAO;
-
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 
 public class DataDownload {
-    Context context;
-    DataDeal dataDeal;
-    StringRequest request;
+    private Context context;
+    private DataDeal dataDeal;
+    private StringRequest request;
 
     public DataDownload(Context context) {
         super();

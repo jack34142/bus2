@@ -1,8 +1,10 @@
 package com.imge.bus2;
 
 import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -10,34 +12,31 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.SupportMapFragment;
-import com.imge.bus2.model.MyFileIO;
-import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.MyDBHelper;
 import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
+import com.imge.bus2.myTools.MyGpsTools;
 import com.imge.bus2.sharedPreferences.MyLog;
-
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     public static Handler handler;
-    DataDownload dataDownload;
-    private Dialog dialog_wait;
-    TextView dialog_wait_tv;
-
+    private DataDownload dataDownload;
     public static Thread downloadThread;
+
+    private Dialog dialog_wait;
+    private TextView dialog_wait_tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataDownload = new DataDownload(MainActivity.this);
+        new MyGpsTools(MainActivity.this);
         setMap();
         setHandler();
         checkDownload();
@@ -54,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 檢查有沒有下載過必要資料
         if( !MyLog.getIsDownload(MainActivity.this) ){
+            dataDownload = new DataDownload(MainActivity.this);
             downloadThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -109,12 +109,13 @@ public class MainActivity extends AppCompatActivity {
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(MapTools.getInstance());
+        MapTools.getInstance().setActivity(MainActivity.this);
     }
 
     private void setMark(){
         BusStopDAO busStopDAO = new BusStopDAO(MainActivity.this);
         Map<String, List> map = busStopDAO.getAll();
-        MapTools.getInstance().checkMapReady(MainActivity.this, map);
+        MapTools.getInstance().checkMapReady(map);
     }
 
     private void setHandler(){
@@ -137,6 +138,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // requestCode == 1 是 MyGpsTools 設置的，用來檢查 Gps 權限
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this, "gps權限已取得", Toast.LENGTH_SHORT).show();
+                if(MapTools.cheackGpsThread != null){
+                    MapTools.cheackGpsThread.interrupt();
+                }
+            } else { // if permission is not granted
+                Toast.makeText(MainActivity.this, "若不提供GPS權限，將自動定位至桃園火車站。", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);     // gps 設置頁面
+//                activity.startActivityForResult(intent,0);         //此为设置完成后返回到获取界面
+            }
+        }
     }
 
 }
