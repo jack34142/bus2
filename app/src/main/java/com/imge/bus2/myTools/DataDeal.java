@@ -3,19 +3,15 @@ package com.imge.bus2.myTools;
 import android.content.Context;
 import android.os.Message;
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.imge.bus2.MainActivity;
 import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.RouteNameBean;
-import com.imge.bus2.model.MyFileIO;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteNameDAO;
 import com.imge.bus2.sharedPreferences.MyLog;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,8 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class DataDeal {
-    Context context;
-    Gson gson;
+    private Context context;
+    private Gson gson;
 
     public DataDeal(Context context) {
         super();
@@ -65,9 +61,6 @@ public class DataDeal {
 
             Log.d("DataDeal", "dealRouteName() 下載完成");
             MainActivity.downloadThread.interrupt();
-//            synchronized (MainActivity.downloadObj) {
-//                MainActivity.downloadObj.notify();
-//            }
 
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
@@ -99,9 +92,6 @@ public class DataDeal {
             Log.d("DataDeal", "organizeBusStops() 下載完成");
             MyLog.setIsDownload(context);
             MainActivity.handler.sendEmptyMessage(0);
-//            synchronized (MainActivity.downloadObj) {
-//                MainActivity.downloadObj.notify();
-//            }
 
         }catch (Exception e){
             Log.e("DataDeal", "dealBusDetails 解析 json 失敗");

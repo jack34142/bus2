@@ -2,9 +2,6 @@ package com.imge.bus2.model;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
