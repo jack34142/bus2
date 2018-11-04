@@ -20,6 +20,6 @@
         android:layout_marginBottom="40dp"
         android:gravity="center"
         android:padding="6dp"
-        android:text="請稍後 ..."
+        android:text="資料下載中 ..."
         android:textSize="20sp" />
 </LinearLayout>

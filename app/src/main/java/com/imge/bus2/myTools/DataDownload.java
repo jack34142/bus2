@@ -1,15 +1,19 @@
 package com.imge.bus2.myTools;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.imge.bus2.MainActivity;
+import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.model.MyVolley;
 import com.imge.bus2.mySQLite.RouteNameDAO;
 
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,10 +44,29 @@ public class DataDownload {
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("DataDownload", "getBusStops() 下載 json 失敗");
-                error.printStackTrace();
-                MyVolley.getInstance(context).addToRequestQue(request);
+            public void onErrorResponse(final VolleyError error) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if( !MyInterent.getIsConn(context) ){
+                            Activity activity = (Activity)context;
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "請確保網路開啟 3秒後將重試", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            try{
+                                Thread.sleep(3000);
+                            }catch (Exception e){}
+                        }
+
+                        Log.e("DataDownload", "getBusStops() 下載 json 失敗");
+                        error.printStackTrace();
+                        MyVolley.getInstance(context).addToRequestQue(request);
+                    }
+                }).start();
             }
         });
 
@@ -74,10 +97,29 @@ public class DataDownload {
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("DataDownload", "getBusStops() 下載 json 失敗");
-                error.printStackTrace();
-                MyVolley.getInstance(context).addToRequestQue(request);
+            public void onErrorResponse(final VolleyError error) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if( !MyInterent.getIsConn(context) ){
+                            Activity activity = (Activity)context;
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "請確保網路開啟 3秒後將重試", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            try{
+                                Thread.sleep(3000);
+                            }catch (Exception e){}
+                        }
+
+                        Log.e("DataDownload", "getBusStops() 下載 json 失敗");
+                        error.printStackTrace();
+                        MyVolley.getInstance(context).addToRequestQue(request);
+                    }
+                }).start();
             }
         });
 

@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.SupportMapFragment;
 import com.imge.bus2.model.MyFileIO;
+import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.MyDBHelper;
 import com.imge.bus2.myTools.DataDownload;
@@ -21,9 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    DataDownload dataDownload;
+
     public static Handler handler;
+    DataDownload dataDownload;
     private Dialog dialog_wait;
+    TextView dialog_wait_tv;
+
     public static Thread downloadThread;
 
     @Override
@@ -51,6 +57,15 @@ public class MainActivity extends AppCompatActivity {
             downloadThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDialog();
+                            dialog_wait.show();
+                        }
+                    });
+
                     // 如果沒有，先下載各路線中文名
                     dataDownload.getRouteName();
 
@@ -73,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
     private void setDialog(){
         dialog_wait = new Dialog(MainActivity.this);
         dialog_wait.setContentView(R.layout.dialog_wait);
+
+        dialog_wait_tv = dialog_wait.findViewById(R.id.dialog_wait_tv);
+
+        // 禁用任何方式取消 Dialog
         dialog_wait.setCancelable(false);
 
         // 螢幕大小 .d.heightPixels = 高 , d.widthPixels = 寬
@@ -107,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         downloadThread = null;
                         setMark();
+                        dialog_wait.dismiss();
+                        dialog_wait = null;
+                        break;
+                    case 1:
+                        dialog_wait_tv.setText("( " + msg.arg2 + " / 2 ) 資料處理中 "+ msg.arg1 + "%" );
                         break;
                     default:
                         break;

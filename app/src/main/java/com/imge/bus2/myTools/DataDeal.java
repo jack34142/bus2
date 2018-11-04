@@ -1,6 +1,7 @@
 package com.imge.bus2.myTools;
 
 import android.content.Context;
+import android.os.Message;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -44,6 +45,11 @@ public class DataDeal {
             for (int i=0; i<ary_len; i++){
                 routeNameBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), RouteNameBean.class);
                 list.add(routeNameBean);
+                Message msg = new Message();
+                msg.what = 1;
+                msg.arg1 = i*100/ary_len;
+                msg.arg2 = 1;
+                MainActivity.handler.sendMessage(msg);
 //                Log.d("DataDeal test", routeNameBean.getDdesc());
             }
 
@@ -80,6 +86,12 @@ public class DataDeal {
             for (int i=0; i<ary_len; i++){
                 busStopsBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), BusStopsBean.class);
                 list.add(busStopsBean);
+
+                Message msg = new Message();
+                msg.what = 1;
+                msg.arg1 = i*100/ary_len;
+                msg.arg2 = 2;
+                MainActivity.handler.sendMessage(msg);
 //                Log.d("DataDeal test", busStopsBean.getRouteId());
             }
 
