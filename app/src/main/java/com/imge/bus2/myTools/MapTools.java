@@ -1,17 +1,25 @@
 package com.imge.bus2.myTools;
 
 import android.app.Activity;
+import android.location.Location;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.imge.bus2.model.LocationUtils;
+
 import java.util.List;
 import java.util.Map;
 
 public class MapTools implements OnMapReadyCallback {
     private Activity activity;
     private static MapTools instance;
+    Marker myIcon;
 
     private GoogleMap mMap;
     private Thread cheackMapThread;
@@ -48,27 +56,10 @@ public class MapTools implements OnMapReadyCallback {
     }
 
     public void checkGpsReady(){
-        cheackGpsThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // 如果還沒取得 gps 權限，先暫停
-                if ( !MyGpsTools.getGpsPermission() ){
-                    try {
-                        Thread.sleep(Long.MAX_VALUE);
-                    } catch (Exception e) {}
-                }
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 回到 main Thread 然後加載當前位置
-                        Double[] myPos = MyGpsTools.getMyPos();
-                        setMyPosition(myPos[0], myPos[1]);
-                    }
-                });
-            }
-        });
-        cheackGpsThread.start();
+        Location location = LocationUtils.getBestLocation(activity, null);
+        if(location != null){
+            setMyPosition(location.getLatitude(), location.getLongitude());
+        }
     }
 
     public void checkMapReady(final Map<String, List> map){
@@ -118,9 +109,26 @@ public class MapTools implements OnMapReadyCallback {
 
     // 地圖移到指定位置
     public void setMyPosition(Double lat, Double lon){
+        if(mMap == null){
+            return;
+        }
+
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(lat, lon);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+
+        if(myIcon == null){
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+        }else{
+            myIcon.remove();
+        }
+
+        myIcon = mMap.addMarker(
+                new MarkerOptions()
+                        .position(sydney)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+        );
+
+
     }
 }

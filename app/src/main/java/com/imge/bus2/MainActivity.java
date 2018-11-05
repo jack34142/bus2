@@ -2,6 +2,7 @@ package com.imge.bus2;
 
 import android.app.Dialog;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -13,11 +14,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.imge.bus2.model.LocationUtils;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.MyDBHelper;
 import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
-import com.imge.bus2.myTools.MyGpsTools;
 import com.imge.bus2.sharedPreferences.MyLog;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new MyGpsTools(MainActivity.this);      // 設置 gps Listener
+        setGps();
         setMap();       // 設置 google 的 call back
         setHandler();       // 設置 handler
         checkDownload();        // 檢查 是否下載過必要資料
@@ -115,6 +116,22 @@ public class MainActivity extends AppCompatActivity {
         dialog_wait.getWindow().setAttributes(p);
     };
 
+    private void setGps(){
+        // 檢查 gps 權限
+        LocationUtils.initPermission(MainActivity.this);
+
+        // gps listener
+        LocationUtils.MyLocationListener mylocationListener = new LocationUtils.MyLocationListener(){
+            @Override
+            public void onLocationChanged(Location location) {
+                super.onLocationChanged(location);
+                MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
+            }
+        };
+        String provider = LocationUtils.getBestProvider(MainActivity.this, null);
+        LocationUtils.addLocationListener(MainActivity.this, provider, mylocationListener);
+    }
+
     // 設置 google map
     private void setMap(){
         SupportMapFragment mapFragment =
@@ -168,12 +185,10 @@ public class MainActivity extends AppCompatActivity {
 
         // requestCode == 1 是 MyGpsTools 設置的，用來檢查 Gps 權限
         if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.this, "gps權限已取得", Toast.LENGTH_SHORT).show();
-                if(MapTools.cheackGpsThread != null){
-                    // 如果取得 gps 權限，就讓 MapTools.cheackGpsThread 繼續執行
-                    MapTools.cheackGpsThread.interrupt();
-                }
+                setGps();       // 重新設置 gps listener
             } else { // if permission is not granted
                 Toast.makeText(MainActivity.this, "若不提供GPS權限，將自動定位至桃園火車站。", Toast.LENGTH_SHORT).show();
 //                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);     // gps 設置頁面
