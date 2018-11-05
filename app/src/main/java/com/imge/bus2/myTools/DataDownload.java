@@ -44,6 +44,7 @@ public class DataDownload {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        // 提示使用者沒有開啟網路，並於3秒後重試
                         if( !MyInterent.getIsConn(context) ){
                             Activity activity = (Activity)context;
                             activity.runOnUiThread(new Runnable() {
@@ -97,6 +98,7 @@ public class DataDownload {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        // 提示使用者沒有開啟網路，並於3秒後重試
                         if( !MyInterent.getIsConn(context) ){
                             Activity activity = (Activity)context;
                             activity.runOnUiThread(new Runnable() {

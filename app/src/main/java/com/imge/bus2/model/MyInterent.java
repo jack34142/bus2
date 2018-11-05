@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 
 public class MyInterent {
 
+    // 檢查網路是否啟用
     public static boolean getIsConn(Context context){
         ConnectivityManager cm =
                 (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);

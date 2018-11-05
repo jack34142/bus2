@@ -38,10 +38,11 @@ public class MapTools implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        setMark();
-        checkGpsReady();
+        setMyPosition();      // 先把地圖移到 桃園車站
+        checkGpsReady();        // 如果 gps 正常運作，再把地圖移到使用者當前位置
 
         if(cheackMapThread != null){
+            // google map 加載完畢，讓 cheackMapThread 繼續運作
             cheackMapThread.interrupt();
         }
     }
@@ -50,6 +51,7 @@ public class MapTools implements OnMapReadyCallback {
         cheackGpsThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                // 如果還沒取得 gps 權限，先暫停
                 if ( !MyGpsTools.getGpsPermission() ){
                     try {
                         Thread.sleep(Long.MAX_VALUE);
@@ -59,6 +61,7 @@ public class MapTools implements OnMapReadyCallback {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        // 回到 main Thread 然後加載當前位置
                         Double[] myPos = MyGpsTools.getMyPos();
                         setMyPosition(myPos[0], myPos[1]);
                     }
@@ -73,6 +76,7 @@ public class MapTools implements OnMapReadyCallback {
         cheackMapThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                // 如果 google map 還沒加載完畢，先等一下
                 if(mMap == null){
                     try {
                         Thread.sleep(Long.MAX_VALUE);
@@ -82,9 +86,9 @@ public class MapTools implements OnMapReadyCallback {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        List value;
+                        // 在地圖上顯示站牌
                         for (String stopName : map.keySet()) {
-                            value = map.get(stopName);
+                            List value = map.get(stopName);
 
                             MapTools.getInstance().setMark(
                                     stopName,
@@ -100,16 +104,19 @@ public class MapTools implements OnMapReadyCallback {
         cheackMapThread.start();
     }
 
-    public void setMark(){
-        LatLng sydney = new LatLng(24.989420, 121.313502);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
-    }
-
+    // 標記一個點
     public void setMark(String stopName, double latitude, double longitude){
         LatLng sydney = new LatLng(latitude, longitude);
         mMap.addMarker(new MarkerOptions().position(sydney).title(stopName));
     }
 
+    // 地圖移到桃園火車站
+    public void setMyPosition(){
+        LatLng sydney = new LatLng(24.989420, 121.313502);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
+    // 地圖移到指定位置
     public void setMyPosition(Double lat, Double lon){
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(lat, lon);
