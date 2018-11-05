@@ -18,11 +18,11 @@ public class BusStopsBean {
      */
 
     private String Id;
-    private String routeId;
-    private String nameZh;
-    private String GoBack;
-    private String latitude;
-    private String longitude;
+    private String routeId;     // 公車 id
+    private String nameZh;      // 站牌中文名
+    private String GoBack;      // 1 = 去程, 2 = 返程 ( 去返程站牌可能不一樣 )
+    private String latitude;        // 站牌的 latitude
+    private String longitude;       // 站牌的 longitude
 
     public String getId() {
         return Id;

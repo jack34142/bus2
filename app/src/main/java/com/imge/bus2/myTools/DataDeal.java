@@ -41,6 +41,8 @@ public class DataDeal {
             for (int i=0; i<ary_len; i++){
                 routeNameBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), RouteNameBean.class);
                 list.add(routeNameBean);
+
+                // 提示下載進度
                 Message msg = new Message();
                 msg.what = 1;
                 msg.arg1 = i*100/ary_len;
@@ -53,6 +55,7 @@ public class DataDeal {
             int list_len = list.size();
             for(int i=0; i<list_len; i++){
                 routeNameBean = list.get(i);
+                // map key = routeName , value = 路線編號 + 路線名稱
                 map.put(routeNameBean.getID(), routeNameBean.getNameZh()+" "+routeNameBean.getDdesc());
             }
 
@@ -80,6 +83,7 @@ public class DataDeal {
                 busStopsBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), BusStopsBean.class);
                 list.add(busStopsBean);
 
+                // 提示下載進度
                 Message msg = new Message();
                 msg.what = 1;
                 msg.arg1 = i*100/ary_len;
@@ -88,7 +92,9 @@ public class DataDeal {
 //                Log.d("DataDeal test", busStopsBean.getRouteId());
             }
 
+            // 整理資料
             organizeBusStops(list);
+
             Log.d("DataDeal", "organizeBusStops() 下載完成");
             MyLog.setIsDownload(context);
             MainActivity.handler.sendEmptyMessage(0);
@@ -128,7 +134,7 @@ public class DataDeal {
                 // 每一經緯度 約 100公里
                 Double distance = Math.abs(Math.pow(lat_old - lat_new, 2) + Math.pow(lon_old - lon_new, 2)) * 100 * 1000;
 
-//                Log.d("DataDeal test", distance.toString());
+                // 同名且小於 50 公尺，視為同一個站點
                 if (distance < 50) {
                     routeIds = (Set<String>) value.get(0);
                     routeIds.add(busStopsBean.getRouteId());
@@ -142,6 +148,7 @@ public class DataDeal {
                 }
             }
 
+            // 找不到同名且小於 50 公尺的站點
             if (!map.containsKey(stopName)) {
                 value = new ArrayList();
                 routeIds  = new HashSet<>();
@@ -152,22 +159,6 @@ public class DataDeal {
                 value.add(Double.parseDouble(busStopsBean.getLongitude()));
                 map.put(stopName, value);
             }
-        }
-
-        JSONArray jsonArray = new JSONArray();
-        try{
-            for(String stopName : map.keySet()){
-                value = map.get(stopName);
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("stopName", stopName);
-                jsonObject.put("latitude", (Double)value.get(1));
-                jsonObject.put("longitude", (Double)value.get(2));
-                jsonObject.put("routeIds", ((Set<String>)value.get(0)).toString() );
-                jsonArray.put(jsonObject);
-            }
-        }catch (Exception e){
-            Log.e("DataDeal", "organizeBusStops 製作 json 失敗");
-            e.printStackTrace();
         }
 
         BusStopDAO busStopDAO = new BusStopDAO(context);

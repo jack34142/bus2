@@ -25,27 +25,28 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     public static Handler handler;
-    private DataDownload dataDownload;
-    public static Thread downloadThread;
+    private DataDownload dataDownload;      // 下載資料時使用的物件
+    public static Thread downloadThread;        // 下載資料時使用的 Thread
 
-    private Dialog dialog_wait;
-    private TextView dialog_wait_tv;
+    private Dialog dialog_wait;     // 下載資料時跳出的提示窗
+    private TextView dialog_wait_tv;        // 提示窗的文字
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new MyGpsTools(MainActivity.this);
-        setMap();
-        setHandler();
-        checkDownload();
+        new MyGpsTools(MainActivity.this);      // 設置 gps Listener
+        setMap();       // 設置 google 的 call back
+        setHandler();       // 設置 handler
+        checkDownload();        // 檢查 是否下載過必要資料
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        MyDBHelper.closeDB();
+        MyDBHelper.closeDB();       // 關閉 database
+        System.exit(0);
     }
 
     // 檢查有沒有下載過必要資料
@@ -53,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         // 檢查有沒有下載過必要資料
         if( !MyLog.getIsDownload(MainActivity.this) ){
+
+            // 如果沒下載過，則創建這個 下載用的物件
             dataDownload = new DataDownload(MainActivity.this);
+
             downloadThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -61,15 +65,17 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            setDialog();
-                            dialog_wait.show();
+                            // dialog 只能在 main thread 執行
+                            setDialog();        // 設定與調整 dialog
+                            dialog_wait.show();     // 顯示 dialog
                         }
                     });
 
-                    // 如果沒有，先下載各路線中文名
+                    // 先下載各路線中文名
                     dataDownload.getRouteName();
 
                     try{
+                        // 暫停這個 Thread 直到有人 interrupt
                         Thread.sleep(Long.MAX_VALUE);
                     }catch (Exception e){}
 
@@ -77,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
                     dataDownload.getBusStops();
                 }
             });
+
             downloadThread.start();
+
         }else{
             // 如果下載過，那就直接 setMark()
             // 否則會在 dataDownload.getBusStops() 後執行
@@ -85,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 設定與調整 dialog
     private void setDialog(){
         dialog_wait = new Dialog(MainActivity.this);
         dialog_wait.setContentView(R.layout.dialog_wait);
@@ -97,24 +106,37 @@ public class MainActivity extends AppCompatActivity {
         // 螢幕大小 .d.heightPixels = 高 , d.widthPixels = 寬
         DisplayMetrics d = getResources().getDisplayMetrics();
 
+        // Dialog 大小 p.height = 高 , p.width = 寬
         WindowManager.LayoutParams p = new WindowManager.LayoutParams();
         p.height = WindowManager.LayoutParams.WRAP_CONTENT;
         p.width = (int) (d.widthPixels * 0.85);
+
+        // 修改 dialog 視窗設定
         dialog_wait.getWindow().setAttributes(p);
     };
 
-    // 啟用 map
+    // 設置 google map
     private void setMap(){
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
-        mapFragment.getMapAsync(MapTools.getInstance());
-        MapTools.getInstance().setActivity(MainActivity.this);
+        mapFragment.getMapAsync(MapTools.getInstance());        // map 準備完成後自動 call back
+        MapTools.getInstance().setActivity(MainActivity.this);      // 我在這個物件會用到 activity
     }
 
+    // 在地圖上顯示公車站位
     private void setMark(){
+
+    /*  取得資料庫中 busStop 的資料，Map<String, List> map
+        *   key = stop name
+        *   index = 0 >> (Set<String>) routeIds  ... ( 經過這個站點的公車有哪些 )
+        *   index = 1 >> latitude
+        *   index = 2 >> longitude
+        * */
         BusStopDAO busStopDAO = new BusStopDAO(MainActivity.this);
         Map<String, List> map = busStopDAO.getAll();
+
+        // 在 map 準備完成後，顯示在地圖上
         MapTools.getInstance().checkMapReady(map);
     }
 
@@ -125,12 +147,12 @@ public class MainActivity extends AppCompatActivity {
                 super.handleMessage(msg);
                 switch (msg.what){
                     case 0:
-                        downloadThread = null;
-                        setMark();
-                        dialog_wait.dismiss();
-                        dialog_wait = null;
+                        downloadThread = null;      // 這個 Thread 用不到了，刪掉
+                        setMark();      // 在地圖上顯示公車站位
+                        dialog_wait.dismiss();      // dialog 隱藏
                         break;
                     case 1:
+                        // 下載的過程中，對使用者做適當的提示
                         dialog_wait_tv.setText("( " + msg.arg2 + " / 2 ) 資料處理中 "+ msg.arg1 + "%" );
                         break;
                     default:
@@ -149,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.this, "gps權限已取得", Toast.LENGTH_SHORT).show();
                 if(MapTools.cheackGpsThread != null){
+                    // 如果取得 gps 權限，就讓 MapTools.cheackGpsThread 繼續執行
                     MapTools.cheackGpsThread.interrupt();
                 }
             } else { // if permission is not granted

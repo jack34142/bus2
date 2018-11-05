@@ -57,8 +57,9 @@ public class MyGpsTools implements LocationListener {
             return new Double[]{location.getLatitude(), location.getLongitude()};
         }catch (SecurityException e){
 
-        }catch (Exception e){       // 如果取得位置失敗，先停個 50 豪秒
+        }catch (Exception e){
             Log.e("MyGpsTools","getMyPos() 取得當前位置失敗");
+            e.printStackTrace();
         }
         return null;
     }

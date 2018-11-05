@@ -131,6 +131,12 @@ public class BusStopDAO{
         db.delete(TABLE_NAME, where , null);
     }
 
+    /* key = (List) stop name
+    * list 的內容
+    * index  = 0 >> (Set<String>) routeIds ... ( 經過此站的公車路線 )
+    * index = 1 >> latitude
+    * index = 2 >> longitude
+    * */
     public Map<String, List> getAll(){
         Map<String, List> map = new HashMap<>();
 
@@ -148,6 +154,7 @@ public class BusStopDAO{
         // 如果有查詢結果
         while (cursor.moveToNext()) {
             String stopName = cursor.getString(cursor.getColumnIndex(STOPNAME_COLUMN));
+            // 調用包裝方法
             map.put(stopName, setList(cursor));
         }
 
@@ -155,6 +162,11 @@ public class BusStopDAO{
         return map;
     }
 
+    /* list 的內容
+     * index  = 0 >> (Set<String>) routeIds ... ( 經過此站的公車路線 )
+     * index = 1 >> latitude
+     * index = 2 >> longitude
+     * */
     public List get(String stopName){
         List list = new ArrayList();
 
@@ -182,6 +194,7 @@ public class BusStopDAO{
 
     }
 
+    // 包裝用
     public List setList(Cursor cursor){
         List list = new ArrayList();
 

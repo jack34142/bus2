@@ -30,6 +30,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return db;
     }
 
+    // 關閉資料庫
     public static void closeDB(){
         if (db != null && db.isOpen()) {
             db.close();

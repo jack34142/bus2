@@ -116,6 +116,7 @@ public class RouteNameDAO {
         db.delete(TABLE_NAME, where , null);
     }
 
+    // key = stop name, value = 路線編號 + 路線名稱
     public Map<String, String> getAll(){
         Map<String, String> map = new HashMap<>();
 
@@ -142,6 +143,7 @@ public class RouteNameDAO {
         return map;
     }
 
+    // return 路線編號 + 路線名稱
     public String get(String routeId){
 
         String where = ROUTEID_COLUMN + "=\""  + routeId + "\"";
