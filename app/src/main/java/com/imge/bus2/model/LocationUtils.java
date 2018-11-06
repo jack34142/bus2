@@ -12,17 +12,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class LocationUtils {
-
     private static final long REFRESH_TIME = 60000L;
     private static final float METER_POSITION = 10.0f;
     private static LocationListener mLocationListener;
+    private static Location myLocation;
 
     public static class MyLocationListener implements LocationListener {
+
         @Override
         public void onLocationChanged(Location location) {      // 每次定位時執行
-
+//            Log.d("LocationUtils", String.valueOf(location.getLatitude()) +","+ String.valueOf(location.getLongitude()) );      // 測試用
+            LocationUtils.myLocation = location;        // manager.getLastKnownLocation(provider) 經常回傳空值，以 getMyLocation() 代替
+            onSuccessLocation(location);
         }
 
         @Override
@@ -39,15 +43,21 @@ public class LocationUtils {
         public void onProviderDisabled(String provider) {       // gps 功能關閉時執行
 
         }
+
+        public void onSuccessLocation(Location location){
+            // please override this function
+        };
     }
 
-    public static void initPermission(Activity activity) {
+    public static boolean initPermission(Activity activity) {
         // 檢查權限
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // 請求權限
             ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return false;
         }
+        return true;
     }
 
     // 取得 gps 定位信息
@@ -121,6 +131,10 @@ public class LocationUtils {
         return location;
     }
 
+    public static Location getMyLocation(){
+        return myLocation;
+    }
+
     // 以預設的時間和距離加入監聽
     public static void addLocationListener(Context context, String provider, LocationListener locationListener) {
 
@@ -143,12 +157,16 @@ public class LocationUtils {
             return;
         }
 
-        // 先以 NETWORK_PROVIDER 監聽一次，然後取消監聽
-        manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        unRegisterListener(context);
-
-        // 再加入監聽
+        // GPS_PROVIDER 速度較慢，所以先用 NETWORK_PROVIDER 監聽一次
+        if(myLocation == null){
+            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
+        }
+        while(myLocation != null){      // 等到第一次定位，才切換監聽
+            unRegisterListener(context);
+        }
+        // 加入監聽
         manager.requestLocationUpdates(provider, time, meter, mLocationListener);
+
     }
 
     // 取消監聽
