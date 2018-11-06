@@ -9,6 +9,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
@@ -23,7 +25,7 @@ public class LocationUtils {
     public static class MyLocationListener implements LocationListener {
 
         @Override
-        public void onLocationChanged(Location location) {      // 每次定位時執行
+        public final void onLocationChanged(Location location) {      // 每次定位時執行
 //            Log.d("LocationUtils", String.valueOf(location.getLatitude()) +","+ String.valueOf(location.getLongitude()) );      // 測試用
             LocationUtils.myLocation = location;        // manager.getLastKnownLocation(provider) 經常回傳空值，以 getMyLocation() 代替
             onSuccessLocation(location);
@@ -158,13 +160,7 @@ public class LocationUtils {
         }
 
         // GPS_PROVIDER 速度較慢，所以先用 NETWORK_PROVIDER 監聽一次
-        if(myLocation == null){
-            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener);
-        }
-        while(myLocation != null){      // 等到第一次定位，才切換監聽
-            unRegisterListener(context);
-        }
-        // 加入監聽
+        myLocation = getNetWorkLocation(context);       // 先用 NETWORK_PROVIDER 的 Location 應急一下
         manager.requestLocationUpdates(provider, time, meter, mLocationListener);
 
     }

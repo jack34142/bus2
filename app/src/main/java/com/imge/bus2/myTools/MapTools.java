@@ -19,11 +19,10 @@ import java.util.Map;
 public class MapTools implements OnMapReadyCallback {
     private Activity activity;
     private static MapTools instance;
-    Marker myIcon = null;
+    private static Marker myIcon = null;
 
     private GoogleMap mMap;
     private Thread cheackMapThread;
-    public static Thread cheackGpsThread;
 
     private MapTools() {
         super();
@@ -46,11 +45,12 @@ public class MapTools implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        setMyPosition();      // 先把地圖移到 桃園車站
-
         Location location = LocationUtils.getMyLocation();
         if (location != null){
             setCenter(location.getLatitude(), location.getLongitude());
+            setMyPosition(location.getLatitude(), location.getLongitude());
+        }else{
+            setMyPosition();      // 地圖移到 桃園車站
         }
 
         if(cheackMapThread != null){
@@ -58,6 +58,8 @@ public class MapTools implements OnMapReadyCallback {
             cheackMapThread.interrupt();
         }
     }
+
+
 
     public void checkMapReady(final Map<String, List> map){
 
