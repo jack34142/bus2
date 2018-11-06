@@ -118,18 +118,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void setGps(){
         // 檢查 gps 權限
-        LocationUtils.initPermission(MainActivity.this);
+        if( LocationUtils.initPermission(MainActivity.this) ){
+            // gps listener
+            LocationUtils.MyLocationListener mylocationListener = new LocationUtils.MyLocationListener(){
 
-        // gps listener
-        LocationUtils.MyLocationListener mylocationListener = new LocationUtils.MyLocationListener(){
-            @Override
-            public void onLocationChanged(Location location) {
-                super.onLocationChanged(location);
-                MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
-            }
-        };
-        String provider = LocationUtils.getBestProvider(MainActivity.this, null);
-        LocationUtils.addLocationListener(MainActivity.this, provider, mylocationListener);
+                @Override
+                public void onSuccessLocation(Location location) {
+                    super.onSuccessLocation(location);
+                    MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                    super.onProviderEnabled(provider);
+                    Location location = LocationUtils.getMyLocation();
+                    if(location != null){
+                        MapTools.getInstance().setCenter(location.getLatitude(), location.getLongitude());
+                        MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
+                    }
+                }
+
+            };
+            String provider = LocationUtils.getBestProvider(MainActivity.this, null);
+            LocationUtils.addLocationListener(MainActivity.this, provider, mylocationListener);
+        }
     }
 
     // 設置 google map

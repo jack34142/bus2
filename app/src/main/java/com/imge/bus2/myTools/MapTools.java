@@ -19,7 +19,7 @@ import java.util.Map;
 public class MapTools implements OnMapReadyCallback {
     private Activity activity;
     private static MapTools instance;
-    Marker myIcon;
+    Marker myIcon = null;
 
     private GoogleMap mMap;
     private Thread cheackMapThread;
@@ -47,18 +47,15 @@ public class MapTools implements OnMapReadyCallback {
         mMap = googleMap;
 
         setMyPosition();      // 先把地圖移到 桃園車站
-        checkGpsReady();        // 如果 gps 正常運作，再把地圖移到使用者當前位置
+
+        Location location = LocationUtils.getMyLocation();
+        if (location != null){
+            setCenter(location.getLatitude(), location.getLongitude());
+        }
 
         if(cheackMapThread != null){
             // google map 加載完畢，讓 cheackMapThread 繼續運作
             cheackMapThread.interrupt();
-        }
-    }
-
-    public void checkGpsReady(){
-        Location location = LocationUtils.getBestLocation(activity, null);
-        if(location != null){
-            setMyPosition(location.getLatitude(), location.getLongitude());
         }
     }
 
@@ -117,18 +114,22 @@ public class MapTools implements OnMapReadyCallback {
         LatLng sydney = new LatLng(lat, lon);
 
         if(myIcon == null){
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+            setCenter(lat, lon);
+            myIcon = mMap.addMarker(
+                    new MarkerOptions()
+                            .position(sydney)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+            );
         }else{
-            myIcon.remove();
+            myIcon.setPosition(sydney);
         }
 
-        myIcon = mMap.addMarker(
-                new MarkerOptions()
-                        .position(sydney)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-        );
-
-
     }
+
+    public void setCenter(Double lat, Double lon){
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(lat, lon);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
 }
