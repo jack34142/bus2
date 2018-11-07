@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private  static  final String TAG = "MainActivity";
     public static Handler handler;
     private DataDownload dataDownload;      // 下載資料時使用的物件
     public static Thread downloadThread;        // 下載資料時使用的 Thread

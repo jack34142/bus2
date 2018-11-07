@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class DataDeal {
+    private static final String TAG = "DataDeal";
     private Context context;
     private Gson gson;
 
@@ -48,7 +49,7 @@ public class DataDeal {
                 msg.arg1 = i*100/ary_len;
                 msg.arg2 = 1;
                 MainActivity.handler.sendMessage(msg);
-//                Log.d("DataDeal test", routeNameBean.getDdesc());
+//                Log.d(TAG, routeNameBean.getDdesc());
             }
 
             Map<String, String> map = new HashMap<>();
@@ -62,11 +63,11 @@ public class DataDeal {
             RouteNameDAO routeNameDAO = new RouteNameDAO(context);
             routeNameDAO.insert(map);
 
-            Log.d("DataDeal", "dealRouteName() 下載完成");
+            Log.d(TAG, "dealRouteName() 下載完成");
             MainActivity.downloadThread.interrupt();
 
         }catch (Exception e){
-            Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
+            Log.e(TAG, "dealBusDetails 解析 json 失敗");
             e.printStackTrace();
         }
     }
@@ -89,18 +90,18 @@ public class DataDeal {
                 msg.arg1 = i*100/ary_len;
                 msg.arg2 = 2;
                 MainActivity.handler.sendMessage(msg);
-//                Log.d("DataDeal test", busStopsBean.getRouteId());
+//                Log.d(TAG, busStopsBean.getRouteId());
             }
 
             // 整理資料
             organizeBusStops(list);
 
-            Log.d("DataDeal", "organizeBusStops() 下載完成");
+            Log.d(TAG, "organizeBusStops() 下載完成");
             MyLog.setIsDownload(context);
             MainActivity.handler.sendEmptyMessage(0);
 
         }catch (Exception e){
-            Log.e("DataDeal", "dealBusDetails 解析 json 失敗");
+            Log.e(TAG, "dealBusDetails 解析 json 失敗");
             e.printStackTrace();
         }
     }

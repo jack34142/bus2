@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class DataDownload {
+
+    private static final String TAG = "DataDownload";
     private Context context;
     private DataDeal dataDeal;
     private StringRequest request;
@@ -59,7 +61,7 @@ public class DataDownload {
                             }catch (Exception e){}
                         }
 
-                        Log.e("DataDownload", "getBusStops() 下載 json 失敗");
+                        Log.e(TAG, "getBusStops() 下載 json 失敗");
                         error.printStackTrace();
                         MyVolley.getInstance(context).addToRequestQue(request);
                     }
@@ -78,7 +80,7 @@ public class DataDownload {
         String routeIds = routeIds_set.toString();
         routeIds = routeIds.substring(1,routeIds.length()-1);
         routeIds = routeIds.replace(", ",",");
-//        Log.d("DataDownload test", routeIds);
+//        Log.d(TAG, routeIds);
 
         String url = "http://apidata.tycg.gov.tw/OPD-io/bus4/GetStop.json?routeIds=" + routeIds;
 
@@ -113,7 +115,7 @@ public class DataDownload {
                             }catch (Exception e){}
                         }
 
-                        Log.e("DataDownload", "getBusStops() 下載 json 失敗");
+                        Log.e(TAG, "getBusStops() 下載 json 失敗");
                         error.printStackTrace();
                         MyVolley.getInstance(context).addToRequestQue(request);
                     }

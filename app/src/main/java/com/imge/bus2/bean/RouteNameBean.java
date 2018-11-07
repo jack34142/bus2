@@ -16,7 +16,7 @@ public class RouteNameBean {
      * MasterRouteNo :
      * MasterRouteDesc : RG
      */
-
+    private static final String TAG = "RouteNameBean";
     private String ID;      // routeId
     private String nameZh;      // 編號
     private String ddesc;       // 中文名
@@ -41,7 +41,7 @@ public class RouteNameBean {
         try {
             ddesc = new String(ddesc.getBytes("iso-8859-1"), "UTF-8");
         }catch (Exception e){
-            Log.e("RouteNameBean", "getDdesc 中文轉碼失敗");
+            Log.e(TAG, "getDdesc 中文轉碼失敗");
         }
 
         return ddesc;

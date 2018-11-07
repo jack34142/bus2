@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 public class LocationUtils {
-    private static final String TAG = "LocationUtils";
+
     private static final long REFRESH_TIME = 5000L;
     private static final float METER_POSITION = 4.0f;
     private static LocationListener mLocationListener;
@@ -27,7 +27,6 @@ public class LocationUtils {
 
         @Override
         public final void onLocationChanged(Location location) {      // 每次定位時執行
-//            Log.d(TAG, String.valueOf(location.getLatitude()) +","+ String.valueOf(location.getLongitude()) );      // 測試用
             LocationUtils.myLocation = location;        // manager.getLastKnownLocation(provider) 經常回傳空值，以 getMyLocation() 代替
             onSuccessLocation(location);
         }

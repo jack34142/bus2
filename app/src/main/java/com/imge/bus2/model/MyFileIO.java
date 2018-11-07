@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class MyFileIO {
+    private static final String TAG = "MyFileIO";
 
     // 寫入一個檔案
     public void saveFile(Context context,String file_name, String data){
@@ -28,7 +29,7 @@ public class MyFileIO {
                 writer.close();
             }
         }catch (IOException e){
-            Log.e("MyFileIO", "saveFile() IO出錯");
+            Log.e(TAG, "saveFile() IO出錯");
             e.printStackTrace();
         }
 
@@ -57,7 +58,7 @@ public class MyFileIO {
         }catch (FileNotFoundException e) {
 
         }catch (IOException e){
-            Log.e("MyFileIO", "readFile() IO出錯");
+            Log.e(TAG, "readFile() IO出錯");
             e.printStackTrace();
         }
 
