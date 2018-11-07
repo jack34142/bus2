@@ -2,7 +2,7 @@
 桃園公車站牌
 
 
-## Log
+## 版本更新
 
 v1.0.0
 
@@ -25,17 +25,23 @@ v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCc
 1.	Google map 
 
 	(1)	Google service sdk
+
 	(2)	api申請
+
 	(3)	OnMapReadyCallback介面實作
+
 
 2.	Volley
 
 	(1)	Volley sdk
+
 	(2)	自製Volley功能整合model
+
 
 3.	SQLite
 
 	(1)	MyDBHelper的通用類別
+
 	(2)	實作了2個DAO規範的類別
 
 4.	檢測網路功能是否正常的function
@@ -43,17 +49,21 @@ v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCc
 5.	FileIO 的2個function
 
 	(1)	讀取
+
 	(2)	寫入
 
 6.	GPS功能
 
 	(1)	LocationUtils的通用類別
+
 	(2)	權限的請求
+
 	(3)	請求的回傳處理
 
 7.	Gson
 
 	(1)	Gson format的使用
+
 	(2)	Gson sdk
 
 8.	了解Json的格式
@@ -61,7 +71,9 @@ v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCc
 9.	Thread與Handler
 
 	(1)	Sleep() 與 interrupt() 的應用
+
 	(2)	Handler與Message的應用
+
 	(3)	runOnUiThread應用
 
 10.	Dialog － 自訂視窗
