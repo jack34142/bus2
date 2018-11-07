@@ -15,6 +15,7 @@ v1.0.0 [google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCcET_85
 ### 運用技術
 
 1.	Google map 
+
 (1)	Google service sdk
 (2)	api申請
 (3)	OnMapReadyCallback介面實作
