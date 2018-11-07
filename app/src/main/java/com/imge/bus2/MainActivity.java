@@ -3,6 +3,7 @@ package com.imge.bus2;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
+    private  static  final String TAG = "MainActivity";
     public static Handler handler;
     private DataDownload dataDownload;      // 下載資料時使用的物件
     public static Thread downloadThread;        // 下載資料時使用的 Thread
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccessLocation(Location location) {
                     super.onSuccessLocation(location);
                     MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
+                    String test = location.getProvider()+" "+LocationUtils.getGPSLocation(MainActivity.this).getProvider();
                 }
 
                 @Override
@@ -144,10 +146,9 @@ public class MainActivity extends AppCompatActivity {
                         MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
                     }
                 }
-
             };
-            String provider = LocationUtils.getBestProvider(MainActivity.this, null);
-            LocationUtils.addLocationListener(MainActivity.this, provider, mylocationListener);
+
+            LocationUtils.addLocationListener(MainActivity.this, LocationManager.NETWORK_PROVIDER, mylocationListener);
         }
     }
 
