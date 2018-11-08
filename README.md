@@ -4,12 +4,19 @@
 
 ## 版本更新
 
+v1.1.0
+
+	新增找到自己位置的按鈕
+
+
 v1.0.0
 
 	hello world!
 
 
 ## 載點
+
+v1.1.0　　[google drive 載點](https://drive.google.com/file/d/1BpaNArX1oqmBqNPGCqQfej9VWqUq1C3v/view?usp=sharing)
 
 v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCcET_85sY5diz0Mc2KLEp/view?usp=sharing)
 

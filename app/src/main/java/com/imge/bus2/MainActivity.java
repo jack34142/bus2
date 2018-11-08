@@ -1,6 +1,7 @@
 package com.imge.bus2;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -12,6 +13,9 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -139,15 +143,21 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onProviderEnabled(String provider) {
                     super.onProviderEnabled(provider);
-                    Location location = LocationUtils.getMyLocation();
-                    if(location != null){
-                        MapTools.getInstance().setCenter(location.getLatitude(), location.getLongitude());
-                        MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
-                    }
+                    setWhereAmI();
                 }
             };
 
             LocationUtils.addLocationListener(MainActivity.this, LocationManager.NETWORK_PROVIDER, mylocationListener);
+        }
+    }
+
+    public void setWhereAmI(){
+        Location location = LocationUtils.getMyLocation();
+        if(location != null){
+            MapTools.getInstance().setCenter(location.getLatitude(), location.getLongitude());
+            MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
+        }else{
+            Toast.makeText(MainActivity.this, "尚未找到你的位置，請稍後，或是確認裝置的gps功能是否正常或開啟", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -196,6 +206,26 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_action_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.where:
+                setWhereAmI();
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
     @Override
