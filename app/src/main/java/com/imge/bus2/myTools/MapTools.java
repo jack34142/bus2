@@ -44,6 +44,7 @@ public class MapTools implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMinZoomPreference(14.5f);
 
         Location location = LocationUtils.getMyLocation();
         if (location != null){
