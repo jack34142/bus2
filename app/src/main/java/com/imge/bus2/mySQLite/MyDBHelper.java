@@ -44,6 +44,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         // 建立應用程式需要的表格
         db.execSQL(BusStopDAO.CREATE_TABLE);
         db.execSQL(RouteNameDAO.CREATE_TABLE);
+        db.execSQL(RouteStopsDAO.CREATE_TABLE);
     }
 
     // 如果db文件存在，並且當前版本號高於上次創建或升級時的版本號，會調用onUpgrade()方法
@@ -53,6 +54,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         // 刪除原有的表格
         db.execSQL("DROP TABLE IF EXISTS " + BusStopDAO.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + RouteNameDAO.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + RouteStopsDAO.TABLE_NAME);
         // 呼叫onCreate建立新版的表格
         onCreate(db);
     }

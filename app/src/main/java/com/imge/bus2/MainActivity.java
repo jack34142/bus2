@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.imge.bus2.config.MyConfig;
 import com.imge.bus2.model.LocationUtils;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.MyDBHelper;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static Handler handler;
-    private DataDownload dataDownload;      // 下載資料時使用的物件
+    DataDownload dataDownload;      // 下載資料時使用的物件
     public static Thread downloadThread;        // 下載資料時使用的 Thread
 
     private Dialog dialog_wait;     // 下載資料時跳出的提示窗
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkDownload(){
 
         // 檢查有沒有下載過必要資料
-        if( !MyLog.getIsDownload(MainActivity.this) ){
+        if( MyLog.getDownloadVersion(MainActivity.this) < MyConfig.download_version){
 
             // 如果沒下載過，則創建這個 下載用的物件
             dataDownload = new DataDownload(MainActivity.this);

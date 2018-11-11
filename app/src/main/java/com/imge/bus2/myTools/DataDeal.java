@@ -9,6 +9,7 @@ import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.RouteNameBean;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteNameDAO;
+import com.imge.bus2.mySQLite.RouteStopsDAO;
 import com.imge.bus2.sharedPreferences.MyLog;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,7 +98,7 @@ public class DataDeal {
             organizeBusStops(list);
 
             Log.d(TAG, "organizeBusStops() 下載完成");
-            MyLog.setIsDownload(context);
+            MyLog.setDownloadVersion(context);
             MainActivity.handler.sendEmptyMessage(0);
 
         }catch (Exception e){
@@ -108,7 +109,8 @@ public class DataDeal {
 
     private void organizeBusStops(List<BusStopsBean> list){
 
-        Map<String, List> map = new HashMap<>();
+        Map<String, List> stop_details = new HashMap<>();
+        Map<String, Set<String>> route_stops = new HashMap<>();
 
     /*
                 List value
@@ -116,8 +118,9 @@ public class DataDeal {
                 index = 1 >> latitude ( Double )
                 index = 2 >> longitude ( Double )
          */
-        List value;
+        List details;
         Set<String> routeIds;
+        Set<String> stops;
 
         BusStopsBean busStopsBean;
         int len_list = list.size();
@@ -126,10 +129,11 @@ public class DataDeal {
 
             int j = 1;
             String stopName = busStopsBean.getNameZh() + j;
-            while (map.containsKey(stopName)) {
-                value = map.get(stopName);
-                Double lat_old = (Double) value.get(1);
-                Double lon_old = (Double) value.get(2);
+            String routeId = busStopsBean.getRouteId();
+            while (stop_details.containsKey(stopName)) {
+                details = stop_details.get(stopName);
+                Double lat_old = (Double) details.get(1);
+                Double lon_old = (Double) details.get(2);
                 Double lat_new = Double.parseDouble(busStopsBean.getLatitude());
                 Double lon_new = Double.parseDouble(busStopsBean.getLongitude());
                 // 每一經緯度 約 100公里
@@ -137,10 +141,14 @@ public class DataDeal {
 
                 // 同名且小於 50 公尺，視為同一個站點
                 if (distance < 50) {
-                    routeIds = (Set<String>) value.get(0);
-                    routeIds.add(busStopsBean.getRouteId());
-                    value.set(0, routeIds);
-                    map.put(stopName, value);
+                    routeIds = (Set<String>) details.get(0);
+                    routeIds.add(routeId);
+                    details.set(0, routeIds);
+                    stop_details.put(stopName, details);
+
+                    stops = route_stops.get(routeId);
+                    stops.add(stopName);
+                    route_stops.put(routeId, stops);
                     break;
                 } else {
                     j++;
@@ -150,21 +158,27 @@ public class DataDeal {
             }
 
             // 找不到同名且小於 50 公尺的站點
-            if (!map.containsKey(stopName)) {
-                value = new ArrayList();
+            if (!stop_details.containsKey(stopName)) {
+                details = new ArrayList();
                 routeIds  = new HashSet<>();
 
-                routeIds.add(busStopsBean.getRouteId());
-                value.add(routeIds);
-                value.add(Double.parseDouble(busStopsBean.getLatitude()));
-                value.add(Double.parseDouble(busStopsBean.getLongitude()));
-                map.put(stopName, value);
+                routeIds.add(routeId);
+                details.add(routeIds);
+                details.add(Double.parseDouble(busStopsBean.getLatitude()));
+                details.add(Double.parseDouble(busStopsBean.getLongitude()));
+                stop_details.put(stopName, details);
+
+                stops = new HashSet<>();
+                stops.add(stopName);
+                route_stops.put(routeId, stops);
             }
         }
 
         BusStopDAO busStopDAO = new BusStopDAO(context);
-        busStopDAO.insert(map);
-
+        busStopDAO.insert(stop_details);
+        RouteStopsDAO routeStopsDAO = new RouteStopsDAO(context);
+        routeStopsDAO.insert(route_stops);
+//        Log.d(TAG, route_stop.get("加油站1").toString());
     }
 
 
