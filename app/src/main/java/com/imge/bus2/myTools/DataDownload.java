@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.model.MyVolley;
 import com.imge.bus2.mySQLite.RouteNameDAO;
@@ -19,6 +20,7 @@ public class DataDownload {
     private Context context;
     private DataDeal dataDeal;
     private StringRequest request;
+    private static int count = 0;
 
     public DataDownload(Context context) {
         super();
@@ -46,9 +48,10 @@ public class DataDownload {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Activity activity = (Activity)context;
+
                         // 提示使用者沒有開啟網路，並於3秒後重試
                         if( !MyInterent.getIsConn(context) ){
-                            Activity activity = (Activity)context;
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -61,9 +64,21 @@ public class DataDownload {
                             }catch (Exception e){}
                         }
 
-                        Log.e(TAG, "getBusStops() 下載 json 失敗");
-                        error.printStackTrace();
-                        MyVolley.getInstance(context).addToRequestQue(request);
+                        count++;
+                        if(count == 5){
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "逾時次數過多，伺服器可能正在更新，請稍候再試", Toast.LENGTH_LONG).show();
+                                    MainActivity.handler.sendEmptyMessage(0);
+                                }
+                            });
+                        }else{
+                            Log.e(TAG, "getBusStops() 下載 json 失敗");
+                            error.printStackTrace();
+                            MyVolley.getInstance(context).addToRequestQue(request);
+                        }
+
                     }
                 }).start();
             }
@@ -100,9 +115,10 @@ public class DataDownload {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        Activity activity = (Activity)context;
+
                         // 提示使用者沒有開啟網路，並於3秒後重試
                         if( !MyInterent.getIsConn(context) ){
-                            Activity activity = (Activity)context;
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -115,9 +131,20 @@ public class DataDownload {
                             }catch (Exception e){}
                         }
 
-                        Log.e(TAG, "getBusStops() 下載 json 失敗");
-                        error.printStackTrace();
-                        MyVolley.getInstance(context).addToRequestQue(request);
+                        count++;
+                        if(count == 5){
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "逾時次數過多，伺服器可能正在更新，請稍候再試", Toast.LENGTH_LONG).show();
+                                    MainActivity.handler.sendEmptyMessage(0);
+                                }
+                            });
+                        }else{
+                            Log.e(TAG, "getBusStops() 下載 json 失敗");
+                            error.printStackTrace();
+                            MyVolley.getInstance(context).addToRequestQue(request);
+                        }
                     }
                 }).start();
             }

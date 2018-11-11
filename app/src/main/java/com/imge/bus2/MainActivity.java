@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             MapTools.getInstance().setCenter(location.getLatitude(), location.getLongitude());
             MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
         }else{
-            Toast.makeText(MainActivity.this, "尚未找到你的位置，請稍後，或是確認裝置的gps功能是否正常或開啟", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "尚未找到你的位置，請稍後，並確認gps功能是否正常或開啟", Toast.LENGTH_LONG).show();
         }
     }
 
