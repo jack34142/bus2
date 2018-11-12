@@ -138,7 +138,9 @@ public class RouteStopsDAO {
         // 如果有查詢結果
         while (cursor.moveToNext()) {
             String stops_str = cursor.getString(cursor.getColumnIndex(STOPS_COLUMN));
-            Set<String> stops = new HashSet<>(Arrays.asList(stops_str));
+            stops_str = stops_str.substring(1, stops_str.length()-1);
+            String[] stops_ary = stops_str.split(", ");
+            Set<String> stops = new HashSet<>(Arrays.asList(stops_ary));
 
             map.put( cursor.getString(cursor.getColumnIndex(ROUTEID_COLUMN)), stops);
         }
@@ -168,7 +170,9 @@ public class RouteStopsDAO {
         if (cursor.moveToFirst()) {
             // 讀取包裝一筆資料的物件
             String stops_str = cursor.getString(cursor.getColumnIndex(STOPS_COLUMN));
-            stops = new HashSet<>(Arrays.asList(stops_str));
+            stops_str = stops_str.substring(1, stops_str.length()-1);
+            String[] stops_ary = stops_str.split(", ");
+            stops = new HashSet<>(Arrays.asList(stops_ary));
         }
 
         cursor.close();

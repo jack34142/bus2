@@ -15,35 +15,38 @@
         tools:context=".MapsActivity" />
 
     <LinearLayout
-        android:id="@+id/top_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".MainActivity"
-        android:clickable="true">
+        tools:context=".MainActivity">
 
         <LinearLayout
-            android:id="@+id/action"
+            android:id="@+id/top_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#f0ffffff"
             android:orientation="vertical"
             tools:context=".MainActivity"
             android:paddingTop="3dp"
-            android:paddingBottom="3dp">
+            android:paddingBottom="3dp"
+            android:visibility="gone"
+            android:clickable="true">
 
             <RadioGroup
+                android:id="@+id/mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <RadioButton
+                    android:id="@+id/mode_start"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="選擇搭車站"/>
 
                 <RadioButton
+                    android:id="@+id/mode_end"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -84,24 +87,26 @@
         </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/show_button"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:background="@drawable/show_button_shape"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:clickable="true">
 
         <ImageButton
+            android:id="@+id/show"
             android:layout_width="match_parent"
             android:layout_height="18dp"
             android:background="#00ffffff"
-            app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp"/>
+            app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"/>
 
         <ImageButton
+            android:id="@+id/hide"
             android:layout_width="match_parent"
             android:layout_height="18dp"
             android:background="#00ffffff"
-            app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"
+            app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp"
             android:visibility="gone"/>
 
     </LinearLayout>

@@ -145,10 +145,6 @@ public class DataDeal {
                     routeIds.add(routeId);
                     details.set(0, routeIds);
                     stop_details.put(stopName, details);
-
-                    stops = route_stops.get(routeId);
-                    stops.add(stopName);
-                    route_stops.put(routeId, stops);
                     break;
                 } else {
                     j++;
@@ -167,19 +163,26 @@ public class DataDeal {
                 details.add(Double.parseDouble(busStopsBean.getLatitude()));
                 details.add(Double.parseDouble(busStopsBean.getLongitude()));
                 stop_details.put(stopName, details);
-
-                stops = new HashSet<>();
-                stops.add(stopName);
-                route_stops.put(routeId, stops);
             }
+
+            // 儲存各公車經過的站點
+            if( route_stops.containsKey(routeId) ){
+                stops = route_stops.get(routeId);
+            }else{
+                stops = new HashSet<>();
+            }
+            stops.add(stopName);
+            route_stops.put(routeId, stops);
+
         }
 
         BusStopDAO busStopDAO = new BusStopDAO(context);
         busStopDAO.insert(stop_details);
         RouteStopsDAO routeStopsDAO = new RouteStopsDAO(context);
         routeStopsDAO.insert(route_stops);
-//        Log.d(TAG, route_stop.get("加油站1").toString());
+//        Log.d(TAG, route_stops.get("5022").toString());
     }
+
 
 
 }

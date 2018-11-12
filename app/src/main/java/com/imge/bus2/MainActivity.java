@@ -20,7 +20,11 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -30,24 +34,31 @@ import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.MyDBHelper;
 import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
+import com.imge.bus2.myTools.SearchTools;
 import com.imge.bus2.sharedPreferences.MyLog;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public static Handler handler;
-    DataDownload dataDownload;      // 下載資料時使用的物件
+    private DataDownload dataDownload;      // 下載資料時使用的物件
     public static Thread downloadThread;        // 下載資料時使用的 Thread
 
     private Dialog dialog_wait;     // 下載資料時跳出的提示窗
     private TextView dialog_wait_tv;        // 提示窗的文字
     private long firstTime=0;       // 記錄用戶首次點擊返回的時間
 
+    private ImageButton btn_show, btn_hide;
+    private LinearLayout top_menu;
+    private RadioGroup mode_group;
+    private RadioButton mode_start;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initView();
         setGps();
         setMap();       // 設置 google 的 call back
         setHandler();       // 設置 handler
@@ -65,6 +76,52 @@ public class MainActivity extends AppCompatActivity {
         MyDBHelper.closeDB();       // 關閉 database
         System.exit(0);
     }
+
+    private void initView(){
+        btn_show = findViewById(R.id.show);
+        btn_hide = findViewById(R.id.hide);
+        top_menu = findViewById(R.id.top_menu);
+        btn_show.setOnClickListener(showListener);
+        btn_hide.setOnClickListener(hideListener);
+
+        mode_group = findViewById(R.id.mode);
+        mode_start = findViewById(R.id.mode_start);
+        mode_start.setChecked(true);
+        mode_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId){
+                    case R.id.mode_start:
+                        SearchTools.getInstance(MainActivity.this).setMode(1);
+                        Toast.makeText(MainActivity.this, "start", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.mode_end:
+                        SearchTools.getInstance(MainActivity.this).setMode(2);
+                        Toast.makeText(MainActivity.this, "end", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                SearchTools.getInstance(MainActivity.this).changeMode();
+            }
+        });
+    }
+
+    View.OnClickListener showListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            top_menu.setVisibility(View.VISIBLE);
+            btn_show.setVisibility(View.GONE);
+            btn_hide.setVisibility(View.VISIBLE);
+        }
+    };
+
+    View.OnClickListener hideListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            top_menu.setVisibility(View.GONE);
+            btn_show.setVisibility(View.VISIBLE);
+            btn_hide.setVisibility(View.GONE);
+        }
+    };
 
     // 檢查有沒有下載過必要資料
     private void checkDownload(){

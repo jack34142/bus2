@@ -199,7 +199,9 @@ public class BusStopDAO{
         List list = new ArrayList();
 
         String routeIds = cursor.getString(cursor.getColumnIndex(ROUTEIDS_COLUMN));
-        Set<String> set = new HashSet<>(Arrays.asList(routeIds));
+        routeIds = routeIds.substring(1, routeIds.length()-1);
+        String[] routeIds_ary = routeIds.split(", ");
+        Set<String> set = new HashSet<>(Arrays.asList(routeIds_ary));
         list.add(set);
         list.add( Double.parseDouble(cursor.getString(cursor.getColumnIndex(LATITUDE_COLUMN))) );
         list.add( Double.parseDouble(cursor.getString(cursor.getColumnIndex(LONGITUDE_COLUMN))) );

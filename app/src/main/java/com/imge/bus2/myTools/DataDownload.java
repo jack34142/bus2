@@ -62,9 +62,10 @@ public class DataDownload {
                             try{
                                 Thread.sleep(3000);
                             }catch (Exception e){}
+                        }else{
+                            count++;
                         }
 
-                        count++;
                         if(count == 5){
                             activity.runOnUiThread(new Runnable() {
                                 @Override
@@ -129,9 +130,10 @@ public class DataDownload {
                             try{
                                 Thread.sleep(3000);
                             }catch (Exception e){}
+                        }else{
+                            count++;
                         }
 
-                        count++;
                         if(count == 5){
                             activity.runOnUiThread(new Runnable() {
                                 @Override

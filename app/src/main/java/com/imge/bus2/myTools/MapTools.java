@@ -11,18 +11,26 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.LocationUtils;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapTools implements OnMapReadyCallback {
     private Activity activity;
     private static MapTools instance;
-    private static Marker myIcon = null;
+    private Marker myIcon = null;
 
     private GoogleMap mMap;
     private Thread cheackMapThread;
+
+    public static Map<String, Marker> stopMarkers = new HashMap<>();
+    public static Set<String> stops_start = new HashSet<>();
+    public static Set<String> stops_end = new HashSet<>();
 
     private MapTools() {
         super();
@@ -48,6 +56,7 @@ public class MapTools implements OnMapReadyCallback {
 
         Location location = LocationUtils.getMyLocation();
         if (location != null){
+            // 地圖移到我的位置，並顯示
             setCenter(location.getLatitude(), location.getLongitude());
             setMyPosition(location.getLatitude(), location.getLongitude());
         }else{
@@ -58,47 +67,14 @@ public class MapTools implements OnMapReadyCallback {
             // google map 加載完畢，讓 cheackMapThread 繼續運作
             cheackMapThread.interrupt();
         }
-    }
-
-
-
-    public void checkMapReady(final Map<String, List> map){
-
-        cheackMapThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // 如果 google map 還沒加載完畢，先等一下
-                if(mMap == null){
-                    try {
-                        Thread.sleep(Long.MAX_VALUE);
-                    } catch (Exception e) {}
-                }
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // 在地圖上顯示站牌
-                        for (String stopName : map.keySet()) {
-                            List value = map.get(stopName);
-
-                            MapTools.getInstance().setMark(
-                                    stopName,
-                                    (Double) value.get(1),
-                                    (Double) value.get(2)
-                            );
-                        }
-                    }
-                });
-
-            }
-        });
-        cheackMapThread.start();
+        setListener();
     }
 
     // 標記一個點
     public void setMark(String stopName, double latitude, double longitude){
         LatLng sydney = new LatLng(latitude, longitude);
-        mMap.addMarker(new MarkerOptions().position(sydney).title(stopName));
+        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title(stopName));
+        stopMarkers.put(stopName, marker);
     }
 
     // 地圖移到桃園火車站
@@ -133,6 +109,73 @@ public class MapTools implements OnMapReadyCallback {
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(lat, lon);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
+    public void setListener(){
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                switch (SearchTools.getInstance(activity).getMode()){
+                    case 1:
+                        setSelected(stops_start, marker);
+                        SearchTools.getInstance(activity).show(stops_start);
+                        break;
+                    case 2:
+                        setSelected(stops_end, marker);
+                        SearchTools.getInstance(activity).show(stops_end);
+                        break;
+                    default:
+                        break;
+                }
+
+                return false;
+            }
+        });
+    }
+
+    private void setSelected(Set<String> stops, Marker marker){
+        String stopName = marker.getTitle();
+
+        if( !stops.contains(stopName) ){
+            stops.add(stopName);
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        }else{
+            stops.remove(stopName);
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+    }
+
+    public void checkMapReady(final Map<String, List> map){
+
+        cheackMapThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 如果 google map 還沒加載完畢，先等一下
+                if(mMap == null){
+                    try {
+                        Thread.sleep(Long.MAX_VALUE);
+                    } catch (Exception e) {}
+                }
+
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // 在地圖上顯示站牌
+                        for (String stopName : map.keySet()) {
+                            List value = map.get(stopName);
+
+                            MapTools.getInstance().setMark(
+                                    stopName,
+                                    (Double) value.get(1),
+                                    (Double) value.get(2)
+                            );
+                        }
+                    }
+                });
+
+            }
+        });
+        cheackMapThread.start();
     }
 
 }
