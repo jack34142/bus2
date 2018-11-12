@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 SearchTools.getInstance(MainActivity.this).changeMode();
             }
         });
+
     }
 
     View.OnClickListener showListener = new View.OnClickListener() {
