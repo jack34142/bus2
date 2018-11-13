@@ -5,7 +5,9 @@ import android.os.Message;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.imge.bus2.MainActivity;
+import com.imge.bus2.TimeActivity;
 import com.imge.bus2.bean.BusStopsBean;
+import com.imge.bus2.bean.ComeTimeBean;
 import com.imge.bus2.bean.RouteNameBean;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteNameDAO;
@@ -182,6 +184,104 @@ public class DataDeal {
         routeStopsDAO.insert(route_stops);
 //        Log.d(TAG, route_stops.get("5022").toString());
     }
+
+
+    public void dealComeTime(String response, Set<String> routeId_set, Set<String> stops_start){
+        stops_start = orginizeStopName(stops_start);
+
+        Gson gson = new Gson();
+        List<List<String>> routeList = new ArrayList<>();
+
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            for(String routeId : routeId_set){
+                String comeTime_go, nextStop_go, comeTime_back, nextStop_back;
+                comeTime_go = nextStop_go = comeTime_back = nextStop_back = "";
+
+                List<String> timeList = new ArrayList<>();
+                JSONArray jsonArray = jsonObject.getJSONArray(routeId);
+
+                int len_jsonArray = jsonArray.length();
+                for (int i=0; i<len_jsonArray; i++){
+                    ComeTimeBean comeTimeBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), ComeTimeBean.class);
+
+                    int goBack = comeTimeBean.getGoBack();
+                    switch(goBack){
+                        case 1:
+                            comeTime_go = getComeTime(comeTime_go, comeTimeBean, stops_start);
+                            nextStop_go = getNextStop(nextStop_go, comeTimeBean);
+                            break;
+                        case 2:
+                            comeTime_back = getComeTime(comeTime_back, comeTimeBean, stops_start);
+                            nextStop_back = getNextStop(nextStop_back, comeTimeBean);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                timeList.add(routeId);
+                timeList.add(comeTime_go);
+                timeList.add(nextStop_go);
+                timeList.add(comeTime_back);
+                timeList.add(nextStop_back);
+
+                routeList.add(timeList);
+            }
+
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = routeList;
+            TimeActivity.handler.handleMessage(msg);
+
+        }catch (Exception e){
+            Log.e(TAG,"dealComeTime() 解析 json 失敗");
+            e.printStackTrace();
+        }
+
+    }
+
+    private Set<String> orginizeStopName(Set<String> stops_start){
+        Set<String> set = new HashSet<>();
+        for(String stopName : stops_start){
+            stopName = stopName.substring(0, stopName.length()-1);
+            set.add(stopName);
+        }
+        return set;
+    }
+
+    private String getComeTime(String comeTime, ComeTimeBean comeTimeBean, Set<String> stops_start){
+        if( comeTime.equals("") ){
+            if( stops_start.contains(comeTimeBean.getStopName()) ){
+                String value = comeTimeBean.getValue();
+                if( value.equals("null") ){
+                    comeTime = comeTimeBean.getComeTime();
+                }else if( value.equals("-3") ){
+                    comeTime = "末班已過";
+                }else{
+                    if (value.equals("0")){
+                        comeTime = "即將進站";
+                    }else{
+                        comeTime = value + " 分";
+                    }
+                }
+            }
+        }
+        return comeTime;
+    }
+
+    private String getNextStop(String nextStop, ComeTimeBean comeTimeBean){
+        if( nextStop.equals("") ){
+            String value = comeTimeBean.getValue();
+            if( !value.equals("null") && !value.equals("-3") ){
+                nextStop = comeTimeBean.getStopName();
+            }
+        }
+        return nextStop;
+    }
+
+
+
 
 
 

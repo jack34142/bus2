@@ -127,7 +127,7 @@ public class MapTools implements OnMapReadyCallback {
                     default:
                         break;
                 }
-
+                SearchTools.getInstance(activity).matchRoutes();
                 return false;
             }
         });

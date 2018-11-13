@@ -25,7 +25,7 @@ public class SearchTools {
     private TextView start, end, match;
     private int mode = 1;
     ImageButton start_cancel, end_cancel;
-//    private Set<String> stops_match = new HashSet<>();
+    private Set<String> routeIds_match = new HashSet<>();
 
     private SearchTools(Activity activity) {
         super();
@@ -46,6 +46,7 @@ public class SearchTools {
             MapTools.stops_start = new HashSet<>();
             show(1);
             changeMode();
+            matchRoutes();
         }
     };
 
@@ -55,6 +56,7 @@ public class SearchTools {
             MapTools.stops_end = new HashSet<>();
             show(2);
             changeMode();
+            matchRoutes();
         }
     };
 
@@ -159,8 +161,8 @@ public class SearchTools {
             }
         }
 
-        matchRoutes();
     }
+
 
     public void matchRoutes(){
         Set<String> stops_start = MapTools.stops_start;;
@@ -180,21 +182,26 @@ public class SearchTools {
             routeIds_end.addAll((Set<String>) details.get(0));
         }
 
+
         String routeIds_str = "[]";
         if(!stops_start.isEmpty() && !stops_end.isEmpty()){
             routeIds_start.retainAll(routeIds_end);
-            routeIds_str = routeIds_start.toString();
+            routeIds_match = routeIds_start;
         }else if( !stops_start.isEmpty() ){
-            routeIds_str = routeIds_start.toString();
+            routeIds_match = routeIds_start;
         }else if(!stops_end.isEmpty()){
-            routeIds_str = routeIds_end.toString();
+            routeIds_match = routeIds_end;
+        }else{
+            routeIds_match = new HashSet<>();
         }
 
+        routeIds_str = routeIds_match.toString();
         routeIds_str = routeIds_str.substring(1, routeIds_str.length()-1 );
         match.setText("匹配公車：" + routeIds_str);
     }
 
-
-
+    public Set<String> getRouteIds_match(){
+        return routeIds_match;
+    }
 
 }

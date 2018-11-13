@@ -36,8 +36,11 @@ import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
 import com.imge.bus2.myTools.SearchTools;
 import com.imge.bus2.sharedPreferences.MyLog;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     public static Handler handler;
@@ -71,39 +74,36 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         MyDBHelper.closeDB();       // 關閉 database
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         System.exit(0);
     }
 
     private void initView(){
+        top_menu = findViewById(R.id.top_menu);
         btn_show = findViewById(R.id.show);
         btn_hide = findViewById(R.id.hide);
-        top_menu = findViewById(R.id.top_menu);
         btn_show.setOnClickListener(showListener);
         btn_hide.setOnClickListener(hideListener);
 
         mode_group = findViewById(R.id.mode);
         mode_start = findViewById(R.id.mode_start);
         mode_start.setChecked(true);
-        mode_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.mode_start:
-                        SearchTools.getInstance(MainActivity.this).setMode(1);
-                        Toast.makeText(MainActivity.this, "start", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.mode_end:
-                        SearchTools.getInstance(MainActivity.this).setMode(2);
-                        Toast.makeText(MainActivity.this, "end", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                SearchTools.getInstance(MainActivity.this).changeMode();
-            }
-        });
+        mode_group.setOnCheckedChangeListener(myRadioListener);
 
+        Button btn_time = findViewById(R.id.time);
+        btn_time.setOnClickListener(myTimeListener);
     }
 
     View.OnClickListener showListener = new View.OnClickListener() {
@@ -121,6 +121,32 @@ public class MainActivity extends AppCompatActivity {
             top_menu.setVisibility(View.GONE);
             btn_show.setVisibility(View.VISIBLE);
             btn_hide.setVisibility(View.GONE);
+        }
+    };
+
+    RadioGroup.OnCheckedChangeListener myRadioListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            switch (checkedId){
+                case R.id.mode_start:
+                    SearchTools.getInstance(MainActivity.this).setMode(1);
+                    break;
+                case R.id.mode_end:
+                    SearchTools.getInstance(MainActivity.this).setMode(2);
+                    break;
+            }
+            SearchTools.getInstance(MainActivity.this).changeMode();
+        }
+    };
+
+    View.OnClickListener myTimeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Set<String> routeIds_match = SearchTools.getInstance(MainActivity.this).getRouteIds_match();
+            Intent intent = new Intent(MainActivity.this, TimeActivity.class);
+            intent.putExtra("routeIds_match", (HashSet<String>)routeIds_match );
+            intent.putExtra("stops_start", (HashSet<String>)MapTools.stops_start );
+            startActivity(intent);
         }
     };
 
