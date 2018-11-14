@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.imge.bus2.R;
+import com.imge.bus2.mySQLite.RouteNameDAO;
+import com.imge.bus2.myTools.TimeSort;
 
 import java.util.List;
 
@@ -17,11 +19,16 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
     Context context;
     LayoutInflater layoutInflater;
     List<List<String>> routeList;
+    RouteNameDAO routeNameDAO;
 
     public TimeRecyclerViewAdapter(Context context, List<List<String>> routeList) {
         super();
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
+        routeNameDAO = new RouteNameDAO(context);
+
+        TimeSort timeSort = new TimeSort(routeList, 1);
+        routeList = timeSort.group();
         this.routeList = routeList;
     }
 
@@ -37,8 +44,19 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         MyViewHolder myHolder = (MyViewHolder) holder;
 
         List<String> timeList = routeList.get(position);
-        myHolder.timeList_value.setText(timeList.get(1));
-        myHolder.timeList_nameZh.setText(timeList.get(0));
+
+        String value = timeList.get(1);
+        if(value.length() == 5){
+            myHolder.timeList_value.setText(timeList.get(1));
+        }else if(value.equals("0")){
+            myHolder.timeList_value.setText("即將到站");
+        }else{
+            myHolder.timeList_value.setText(timeList.get(1)+" 分");
+        }
+
+        String routeNameZh = routeNameDAO.get(timeList.get(0));
+        myHolder.timeList_nameZh.setText(routeNameZh);
+
         myHolder.timeList_nextStop.setText(timeList.get(2));
     }
 

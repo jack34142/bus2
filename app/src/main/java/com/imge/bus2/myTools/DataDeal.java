@@ -251,6 +251,9 @@ public class DataDeal {
     }
 
     private String getComeTime(String comeTime, ComeTimeBean comeTimeBean, Set<String> stops_start){
+        if(stops_start.isEmpty()){
+            return comeTime;
+        }
         if( comeTime.equals("") ){
             if( stops_start.contains(comeTimeBean.getStopName()) ){
                 String value = comeTimeBean.getValue();
@@ -259,11 +262,7 @@ public class DataDeal {
                 }else if( value.equals("-3") ){
                     comeTime = "末班已過";
                 }else{
-                    if (value.equals("0")){
-                        comeTime = "即將進站";
-                    }else{
-                        comeTime = value + " 分";
-                    }
+                    comeTime = value;
                 }
             }
         }

@@ -81,12 +81,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        MyDBHelper.closeDB();       // 關閉 database
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MyDBHelper.closeDB();       // 關閉 database
         System.exit(0);
     }
 
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-            LocationUtils.addLocationListener(MainActivity.this, LocationManager.NETWORK_PROVIDER, mylocationListener);
+            LocationUtils.addLocationListener(MainActivity.this, MyConfig.provider , mylocationListener);
         }
     }
 
