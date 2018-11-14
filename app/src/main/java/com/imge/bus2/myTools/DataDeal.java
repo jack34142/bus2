@@ -185,7 +185,7 @@ public class DataDeal {
 //        Log.d(TAG, route_stops.get("5022").toString());
     }
 
-
+    int last_value;     // 上一站的時間 ( 用來判斷公車的下一站用的 )
     public void dealComeTime(String response, Set<String> routeId_set, Set<String> stops_start){
         stops_start = orginizeStopName(stops_start);
 
@@ -208,12 +208,12 @@ public class DataDeal {
                     int goBack = comeTimeBean.getGoBack();
                     switch(goBack){
                         case 1:
+                            nextStop_go = getNextStop(nextStop_go, comeTime_go, comeTimeBean);
                             comeTime_go = getComeTime(comeTime_go, comeTimeBean, stops_start);
-                            nextStop_go = getNextStop(nextStop_go, comeTimeBean);
                             break;
                         case 2:
+                            nextStop_back = getNextStop(nextStop_back, comeTime_back, comeTimeBean);
                             comeTime_back = getComeTime(comeTime_back, comeTimeBean, stops_start);
-                            nextStop_back = getNextStop(nextStop_back, comeTimeBean);
                             break;
                         default:
                             break;
@@ -269,11 +269,23 @@ public class DataDeal {
         return comeTime;
     }
 
-    private String getNextStop(String nextStop, ComeTimeBean comeTimeBean){
+    private String getNextStop(String nextStop, String comeTime, ComeTimeBean comeTimeBean){
         if( nextStop.equals("") ){
             String value = comeTimeBean.getValue();
             if( !value.equals("null") && !value.equals("-3") ){
                 nextStop = comeTimeBean.getStopName();
+                last_value = 0;
+            }
+        }else{      // 如果同時有多台公車進行
+            if(comeTime.equals("")){        // 找尋經過搭車站前的公車
+                int value = Integer.parseInt( comeTimeBean.getValue() );
+
+                if(value >= last_value){        // 這一站抵達時間大於等於下一站
+                    last_value = value;     // 記錄上一站的抵達時間
+                }else{      // 這一站抵達時間小於下一站 ( 找到另一台公車的下一站 )
+                    nextStop = comeTimeBean.getStopName();      // 記錄這台公車
+                    last_value = 0;     // 上一站的抵達時間歸 0
+                }
             }
         }
         return nextStop;

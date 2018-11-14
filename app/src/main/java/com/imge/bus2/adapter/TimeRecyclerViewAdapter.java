@@ -21,13 +21,13 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
     List<List<String>> routeList;
     RouteNameDAO routeNameDAO;
 
-    public TimeRecyclerViewAdapter(Context context, List<List<String>> routeList) {
+    public TimeRecyclerViewAdapter(Context context, List<List<String>> routeList, int goBack) {
         super();
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
         routeNameDAO = new RouteNameDAO(context);
 
-        TimeSort timeSort = new TimeSort(routeList, 1);
+        TimeSort timeSort = new TimeSort(routeList, goBack);
         routeList = timeSort.group();
         this.routeList = routeList;
     }
@@ -46,7 +46,7 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         List<String> timeList = routeList.get(position);
 
         String value = timeList.get(1);
-        if(value.length() == 5){
+        if( value.length() >= 4 || value.equals("") ){
             myHolder.timeList_value.setText(timeList.get(1));
         }else if(value.equals("0")){
             myHolder.timeList_value.setText("即將到站");

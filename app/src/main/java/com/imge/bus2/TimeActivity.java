@@ -3,12 +3,17 @@ package com.imge.bus2;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
+import com.imge.bus2.adapter.TimeFragmentPagetAdapter;
 import com.imge.bus2.adapter.TimeRecyclerViewAdapter;
 import com.imge.bus2.myTools.DataDownload;
 
@@ -18,12 +23,15 @@ import java.util.Set;
 public class TimeActivity extends AppCompatActivity {
     Intent intent;
     public static Handler handler;
+    FragmentManager fragmentManager;
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.time_list);
+        setContentView(R.layout.activity_time);
 
+        initView();
         setHandler();
 
         intent = getIntent();
@@ -35,6 +43,13 @@ public class TimeActivity extends AppCompatActivity {
             dataDownload.getComeTime(routeIds_match, stops_start);
         }
 
+    }
+
+    public void initView(){
+        fragmentManager = getSupportFragmentManager();
+        viewPager = findViewById(R.id.time_viewPager);
+        TabLayout tabLayout = findViewById(R.id.time_tabLayout);
+        tabLayout.setupWithViewPager(viewPager);        // 用來同步 viewPager 與 tabLayout
     }
 
     private void setHandler(){
@@ -49,21 +64,10 @@ public class TimeActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                RecyclerView timeRecyclerView = findViewById(R.id.timeRecyclerView);
-
-                                // LinearLayoutManager 類似 ListView
-                                LinearLayoutManager manager = new LinearLayoutManager(TimeActivity.this);
-                                // 直列堆疊
-                                manager.setOrientation(LinearLayoutManager.VERTICAL);
-                                // 分格線
-                                timeRecyclerView.addItemDecoration(new DividerItemDecoration(TimeActivity.this, DividerItemDecoration.VERTICAL));
-                                timeRecyclerView.setLayoutManager(manager);
-
-                                TimeRecyclerViewAdapter timeRecyclerViewAdapter = new TimeRecyclerViewAdapter(TimeActivity.this, routeList);
-                                timeRecyclerView.setAdapter(timeRecyclerViewAdapter);
+                                TimeFragmentPagetAdapter adapter = new TimeFragmentPagetAdapter(fragmentManager, routeList);
+                                viewPager.setAdapter(adapter);
                             }
                         });
-
                         break;
                 }
             }
