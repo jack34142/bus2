@@ -28,15 +28,19 @@ v1.0.0
 
 ## 載點
 
+v2.0.0    [google drive 載點](https://drive.google.com/file/d/1D2Fx8AdUsqebIO0NQp5TlNvONxU6zEKz/view?usp=sharing)
+
 v1.1.0　　[google drive 載點](https://drive.google.com/file/d/1BpaNArX1oqmBqNPGCqQfej9VWqUq1C3v/view?usp=sharing)
 
 v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCcET_85sY5diz0Mc2KLEp/view?usp=sharing)
 
 
 ## 功能
-1.	顯示你的位置
-2.	顯示所有的桃園站牌
-3. 	之後再新增
+1. 顯示你的位置
+2. 顯示所有的桃園站牌
+3. 根據選擇之「搭車站」與「目的地」匹配公車 (可不選)
+4. 顯示匹配公車時刻表
+5. 時刻表會自動更新 (20秒一次)
 
 
 ### 運用技術
