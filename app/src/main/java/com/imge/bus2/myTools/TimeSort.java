@@ -1,13 +1,8 @@
 package com.imge.bus2.myTools;
 
 import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TimeSort {
     private List<List<String>> routeList;
@@ -19,17 +14,17 @@ public class TimeSort {
 
         switch (goBack){
             case 1:
-                a = 1;
-                b = 2;
+                a = 1;      // comeTime_start
+                b = 2;      // nextStop_start
                 break;
             case 2:
-                a = 3;
-                b = 4;
+                a = 3;      // comeTime_end
+                b = 4;      // nextStop_end
                 break;
         }
-
     }
 
+    // 重新分組, 並排序
     public List<List<String>> group(){
         List<List<String>> wait = new ArrayList<>();
         List<List<String>> stop = new ArrayList<>();
@@ -71,6 +66,7 @@ public class TimeSort {
         return routeList;
     }
 
+    // bubbleSort
     public List<List<String>> sortString(List<List<String>> lists){
 
         boolean bubbleSort = true;
@@ -94,6 +90,7 @@ public class TimeSort {
         return lists;
     }
 
+    // bubbleSort
     public List<List<String>> sortInt(List<List<String>> lists){
 
         boolean bubbleSort = true;

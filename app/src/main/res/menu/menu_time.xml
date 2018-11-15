@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/where"
-        android:title="我在哪"
+        android:id="@+id/time_update"
+        android:title="更新"
         app:showAsAction="ifRoom" />
 
 </menu>

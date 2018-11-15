@@ -8,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.imge.bus2.R;
 import com.imge.bus2.mySQLite.RouteNameDAO;
 import com.imge.bus2.myTools.TimeSort;
-
 import java.util.List;
 
 public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
@@ -27,8 +25,10 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         layoutInflater = LayoutInflater.from(context);
         routeNameDAO = new RouteNameDAO(context);
 
+        // 依照抵達時間重新排序
         TimeSort timeSort = new TimeSort(routeList, goBack);
         routeList = timeSort.group();
+
         this.routeList = routeList;
     }
 
@@ -46,17 +46,19 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         List<String> timeList = routeList.get(position);
 
         String value = timeList.get(1);
-        if( value.length() >= 4 || value.equals("") ){
+        if( value.length() >= 4 || value.equals("") ){      // 4個字的 = 末班已過 , 5個字的 = XX:XX (發車時間), 空白就是空白
             myHolder.timeList_value.setText(timeList.get(1));
-        }else if(value.equals("0")){
+        }else if(value.equals("0")){        // 0分後抵達, 顯示即將到站
             myHolder.timeList_value.setText("即將到站");
-        }else{
+        }else{      // 顯示幾分後到達
             myHolder.timeList_value.setText(timeList.get(1)+" 分");
         }
 
+        // 公車路線名稱
         String routeNameZh = routeNameDAO.get(timeList.get(0));
         myHolder.timeList_nameZh.setText(routeNameZh);
 
+        // 下一站站點名稱
         myHolder.timeList_nextStop.setText(timeList.get(2));
     }
 
@@ -75,6 +77,8 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
             timeList_nextStop = itemView.findViewById(R.id.timeList_nextStop);
         }
     }
+
+
 
 
 }

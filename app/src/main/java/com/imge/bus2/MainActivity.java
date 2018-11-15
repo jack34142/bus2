@@ -4,20 +4,16 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -51,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView dialog_wait_tv;        // 提示窗的文字
     private long firstTime=0;       // 記錄用戶首次點擊返回的時間
 
-    private ImageButton btn_show, btn_hide;
-    private LinearLayout top_menu;
-    private RadioGroup mode_group;
-    private RadioButton mode_start;
+    private ImageButton btn_show, btn_hide;     // 最上面選單的開關
+    private LinearLayout top_menu;      // 最上面的選單
+    private RadioGroup mode_group;      // 選擇模式用
+    private RadioButton mode_start;     // 選擇搭車站模式
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initView();
-        setGps();
+        setGps();       // 設定 gps Listener
         setMap();       // 設置 google 的 call back
         setHandler();       // 設置 handler
         checkDownload();        // 檢查 是否下載過必要資料
@@ -106,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         btn_time.setOnClickListener(myTimeListener);
     }
 
+    // 最上面的選單顯示
     View.OnClickListener showListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -115,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    // 最上面的選單消失
     View.OnClickListener hideListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -124,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    // 改變模式
     RadioGroup.OnCheckedChangeListener myRadioListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    // 顯示所選路線時刻表
     View.OnClickListener myTimeListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -240,12 +240,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 地圖移到我的位置
     public void setWhereAmI(){
         Location location = LocationUtils.getMyLocation();
-        if(location != null){
+        if(location != null){       // 如果定位成功
             MapTools.getInstance().setCenter(location.getLatitude(), location.getLongitude());
             MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
-        }else{
+        }else{      // 如果失敗
             Toast.makeText(MainActivity.this, "尚未找到你的位置，請稍後，並確認gps功能是否正常或開啟", Toast.LENGTH_LONG).show();
         }
     }
@@ -300,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_action_bar, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -308,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.where:
-                setWhereAmI();
+                setWhereAmI();      // 地圖移到我的位置
                 break;
             default:
                 break;

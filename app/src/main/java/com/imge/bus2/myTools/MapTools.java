@@ -2,18 +2,14 @@ package com.imge.bus2.myTools;
 
 import android.app.Activity;
 import android.location.Location;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.imge.bus2.MainActivity;
 import com.imge.bus2.model.LocationUtils;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,11 +51,11 @@ public class MapTools implements OnMapReadyCallback {
         mMap.setMinZoomPreference(14.5f);
 
         Location location = LocationUtils.getMyLocation();
-        if (location != null){
+        if (location != null){      // 如果定位成功
             // 地圖移到我的位置，並顯示
             setCenter(location.getLatitude(), location.getLongitude());
             setMyPosition(location.getLatitude(), location.getLongitude());
-        }else{
+        }else{      // 如果定位失敗
             setMyPosition();      // 地圖移到 桃園車站
         }
 
@@ -83,7 +79,7 @@ public class MapTools implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
     }
 
-    // 地圖移到指定位置
+    // 標記我的位置
     public void setMyPosition(Double lat, Double lon){
         if(mMap == null){
             return;
@@ -105,12 +101,14 @@ public class MapTools implements OnMapReadyCallback {
 
     }
 
+    // 地圖移到指定點
     public void setCenter(Double lat, Double lon){
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(lat, lon);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
     }
 
+    // 設定 mark 點擊事件
     public void setListener(){
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -133,18 +131,20 @@ public class MapTools implements OnMapReadyCallback {
         });
     }
 
+    // mark 點擊後操作
     private void setSelected(Set<String> stops, Marker marker){
         String stopName = marker.getTitle();
 
         if( !stops.contains(stopName) ){
             stops.add(stopName);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));       // 選取變綠色
         }else{
             stops.remove(stopName);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));     // 取消變回紅色
         }
     }
 
+    // 載入所有公車站牌
     public void checkMapReady(final Map<String, List> map){
 
         cheackMapThread = new Thread(new Runnable() {

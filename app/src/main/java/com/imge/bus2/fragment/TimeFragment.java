@@ -8,15 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.imge.bus2.R;
-import com.imge.bus2.TimeActivity;
 import com.imge.bus2.adapter.TimeRecyclerViewAdapter;
-
 import java.util.List;
 
 /**
@@ -24,17 +20,25 @@ import java.util.List;
  */
 public class TimeFragment extends Fragment {
     private Activity activity;
-    private List<List<String>> routeList;
-    private int goBack;
-
+    private List<List<String>> routeList;       // 選擇的路線
+    private int goBack;     // 去或返
+    private RecyclerView timeRecyclerView;      // 列表物件
+    private TimeRecyclerViewAdapter adapter;
 
     public TimeFragment() {
         // Required empty public constructor
     }
 
+    // 建立物件後, 先執行此方法傳參數
     public void setData(List<List<String>> routeList, int goBack){
         this.routeList = routeList;
         this.goBack = goBack;
+    }
+
+    // 更新列表用
+    public void updateAdapter(List<List<String>> routeList){
+        adapter = new TimeRecyclerViewAdapter(activity, routeList, goBack);
+        timeRecyclerView.setAdapter(adapter);
     }
 
     // initial View
@@ -42,7 +46,10 @@ public class TimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_time, container, false);
+        View view = inflater.inflate(R.layout.fragment_time, container, false);
+        timeRecyclerView = view.findViewById(R.id.timeRecyclerView);
+
+        return view;
     }
 
     // set View
@@ -50,9 +57,6 @@ public class TimeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         activity = getActivity();
-        View view = getView();
-
-        RecyclerView timeRecyclerView = view.findViewById(R.id.timeRecyclerView);
 
         // LinearLayoutManager 類似 ListView
         LinearLayoutManager manager = new LinearLayoutManager(activity);
@@ -61,18 +65,10 @@ public class TimeFragment extends Fragment {
         // 分格線
         timeRecyclerView.addItemDecoration(new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL));
         timeRecyclerView.setLayoutManager(manager);
+        updateAdapter(routeList);
 
-        TimeRecyclerViewAdapter timeRecyclerViewAdapter = new TimeRecyclerViewAdapter(activity, routeList, goBack);
-        timeRecyclerView.setAdapter(timeRecyclerViewAdapter);
-
+        // 隱藏 Activity 上的 progressBar
         activity.findViewById(R.id.time_progressBar).setVisibility(View.GONE);
-
     }
-
-
-
-
-
-
 
 }

@@ -1,19 +1,15 @@
 package com.imge.bus2.myTools;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.imge.bus2.R;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteStopsDAO;
-
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +40,7 @@ public class SearchTools {
         @Override
         public void onClick(View v) {
             MapTools.stops_start = new HashSet<>();
-            show(1);
+            show(MapTools.stops_start);
             changeMode();
             matchRoutes();
         }
@@ -54,12 +50,13 @@ public class SearchTools {
         @Override
         public void onClick(View v) {
             MapTools.stops_end = new HashSet<>();
-            show(2);
+            show(MapTools.stops_end);
             changeMode();
             matchRoutes();
         }
     };
 
+    // 單例
     public static SearchTools getInstance(Activity activity){
         if (instance == null){
             synchronized (SearchTools.class){
@@ -69,14 +66,17 @@ public class SearchTools {
         return instance;
     }
 
+    // 取得 mode ( 1=選擇搭車站, 2=選擇目的地 )
     public int getMode(){
         return mode;
     }
 
+    // 設定模式 ( 1=選擇搭車站, 2=選擇目的地 )
     public void setMode(int mode){
         this.mode = mode;
     }
 
+    // 顯示已選擇的站牌
     public void show(Set<String> stops){
         String stops_str = stops.toString();
         stops_str = stops_str.substring(1, stops_str.length()-1 );
@@ -88,19 +88,6 @@ public class SearchTools {
             case 2:
                 stops_str = "目的地：" + stops_str;
                 end.setText(stops_str);
-                break;
-            default:
-                break;
-        }
-    }
-
-    public void show(int mode){
-        switch (mode){
-            case 1:
-                start.setText("搭車站：");
-                break;
-            case 2:
-                end.setText("目的地：");
                 break;
             default:
                 break;
@@ -127,34 +114,37 @@ public class SearchTools {
                 break;
         }
 
-        Set<String> routeIds = new HashSet<>();
         BusStopDAO busStopDAO = new BusStopDAO(activity);
-
+        // 取得經過 A 站的所有公車路線
+        Set<String> routeIds = new HashSet<>();
         for(String stopName : stops_A){
             List details = busStopDAO.get(stopName);
             routeIds.addAll((Set<String>) details.get(0));
         }
 
-        Set<String> stops_match = new HashSet<>();
         RouteStopsDAO routeStopsDAO = new RouteStopsDAO(activity);
+        // 取得以上公車所經過的所有站牌
+        Set<String> stops_match = new HashSet<>();
         for (String routeId : routeIds){
             stops_match.addAll( routeStopsDAO.get(routeId) );
         }
 
+
         for (String stopName : stopMarkers.keySet()){
             Marker marker = stopMarkers.get(stopName);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));     // 全部點設成紅色
 
             if(!stops_match.isEmpty()){
                 if( stops_match.contains(stopName) ){
-                    marker.setVisible(true);
+                    marker.setVisible(true);        // 經過的站牌打開
                 }else{
-                    marker.setVisible(false);
+                    marker.setVisible(false);       // 不相關的關掉
                 }
             }else{
-                marker.setVisible(true);
+                marker.setVisible(true);        // 如果沒有相關的站牌, 那就全部打開
             }
 
+            // 已選取的點改為綠色
             if(stops_B.contains(stopName)){
                 marker.setVisible(true);
                 marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
@@ -163,7 +153,7 @@ public class SearchTools {
 
     }
 
-
+    // 既經過 A 點也經過 B 點的路線
     public void matchRoutes(){
         Set<String> stops_start = MapTools.stops_start;;
         Set<String> stops_end = MapTools.stops_end;
@@ -172,30 +162,30 @@ public class SearchTools {
         Set<String> routeIds_end = new HashSet<>();
         BusStopDAO busStopDAO = new BusStopDAO(activity);
 
+        // 經過 A 點路線
         for(String stopName : stops_start){
             List details = busStopDAO.get(stopName);
             routeIds_start.addAll((Set<String>) details.get(0));
         }
 
+        // 經過 B 點路線
         for(String stopName : stops_end){
             List details = busStopDAO.get(stopName);
             routeIds_end.addAll((Set<String>) details.get(0));
         }
 
-
-        String routeIds_str = "[]";
-        if(!stops_start.isEmpty() && !stops_end.isEmpty()){
-            routeIds_start.retainAll(routeIds_end);
+        if(!stops_start.isEmpty() && !stops_end.isEmpty()){     // AB 路線皆不為空
+            routeIds_start.retainAll(routeIds_end);     // 取交集
             routeIds_match = routeIds_start;
-        }else if( !stops_start.isEmpty() ){
-            routeIds_match = routeIds_start;
-        }else if(!stops_end.isEmpty()){
-            routeIds_match = routeIds_end;
-        }else{
-            routeIds_match = new HashSet<>();
+        }else if( !stops_start.isEmpty() ){     // A 不為空
+            routeIds_match = routeIds_start;        // 取A
+        }else if(!stops_end.isEmpty()){     // B不為空
+            routeIds_match = routeIds_end;      // 取B
+        }else{      // 皆為空
+            routeIds_match = new HashSet<>();       // 那就空
         }
 
-        routeIds_str = routeIds_match.toString();
+        String routeIds_str = routeIds_match.toString();
         routeIds_str = routeIds_str.substring(1, routeIds_str.length()-1 );
         match.setText("匹配公車：" + routeIds_str);
     }

@@ -187,9 +187,20 @@ public class DataDeal {
 
     int last_value;     // 上一站的時間 ( 用來判斷公車的下一站用的 )
     public void dealComeTime(String response, Set<String> routeId_set, Set<String> stops_start){
+
+        // 因為會有同名的站點，所以我在站名後面加數字做區別
+        // 但原本沒有這數字，所以要去掉才能做比較
         stops_start = orginizeStopName(stops_start);
 
         Gson gson = new Gson();
+    /* routeList.add( timeList )  >> 一筆資料 一個路線
+        * List<String> timeList;
+        * index = 1 >> routeId
+        * index = 2 >> comeTime_go
+        * index = 3 >> nextStop_go
+        * index = 4 >> comeTime_back
+        * index = 5 >> nextStop_back
+        * */
         List<List<String>> routeList = new ArrayList<>();
 
         try{
@@ -208,12 +219,12 @@ public class DataDeal {
                     int goBack = comeTimeBean.getGoBack();
                     switch(goBack){
                         case 1:
-                            nextStop_go = getNextStop(nextStop_go, comeTime_go, comeTimeBean);
-                            comeTime_go = getComeTime(comeTime_go, comeTimeBean, stops_start);
+                            nextStop_go = getNextStop(nextStop_go, comeTime_go, comeTimeBean);      // 找下一站站點
+                            comeTime_go = getComeTime(comeTime_go, comeTimeBean, stops_start);      // 找抵達時間
                             break;
                         case 2:
-                            nextStop_back = getNextStop(nextStop_back, comeTime_back, comeTimeBean);
-                            comeTime_back = getComeTime(comeTime_back, comeTimeBean, stops_start);
+                            nextStop_back = getNextStop(nextStop_back, comeTime_back, comeTimeBean);        // 找下一站站點
+                            comeTime_back = getComeTime(comeTime_back, comeTimeBean, stops_start);      // 找抵達時間
                             break;
                         default:
                             break;
@@ -244,14 +255,14 @@ public class DataDeal {
     private Set<String> orginizeStopName(Set<String> stops_start){
         Set<String> set = new HashSet<>();
         for(String stopName : stops_start){
-            stopName = stopName.substring(0, stopName.length()-1);
+            stopName = stopName.substring(0, stopName.length()-1);      // 去掉最後的號碼
             set.add(stopName);
         }
         return set;
     }
 
     private String getComeTime(String comeTime, ComeTimeBean comeTimeBean, Set<String> stops_start){
-        if(stops_start.isEmpty()){
+        if(stops_start.isEmpty()){      // 如果沒有選搭車站, 就不用找了
             return comeTime;
         }
         if( comeTime.equals("") ){

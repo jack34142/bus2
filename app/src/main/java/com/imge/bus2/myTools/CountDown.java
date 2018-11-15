@@ -1,50 +1,49 @@
-package com.imge.yeezbus.tools;
+package com.imge.bus2.myTools;
 
 import android.os.Message;
-import android.util.Log;
-
-import com.imge.yeezbus.MainActivity;
+import com.imge.bus2.TimeActivity;
+import com.imge.bus2.config.MyConfig;
 
 public class CountDown extends Thread{
-    private int count = 0;
-    private final Object lock = new Object();
-    public boolean isPause = false;
+    private int count = 0;      // 計時用
+    private boolean isPause = false;     // 判斷是否暫停
+    private boolean isClose = false;
 
     @Override
     public void run() {
         super.run();
-        synchronized (lock){
-            while (true){
-                if(isPause == true){
-                    try{
-                        lock.wait(1000);
-                    }catch (Exception e){}
-                }else{
-                    Message msg = new Message();
-                    msg.what = 3;
-                    msg.arg1 = count;
-                    MainActivity.handler.sendMessage(msg);
 
-                    if(count == 0){
-                        try{
-                            lock.wait();
-                        }catch (Exception e){}
-                    }else{
-                        try{
-                            Thread.sleep(1000);
-                        }catch (Exception e){}
-                        count--;
-                    }
+        while ( !isClose ){
+            if( !isPause ){     // 運行中
+
+                // 顯示當前秒數
+                Message msg = new Message();
+                msg.what = 2;
+                msg.arg1 = count;
+                TimeActivity.handler.sendMessage(msg);
+
+                if(count == 0){     // 數到 0 更新
+                    TimeActivity.handler.sendEmptyMessage(1);
+                    try{
+                        Thread.sleep(Long.MAX_VALUE);
+                    }catch (Exception e){}
+                }else{      // 睡個1秒, 然後 count - 1
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception e){}
+                    count--;
                 }
+            }else{      // 暫停
+                try{
+                    Thread.sleep(Long.MAX_VALUE);
+                }catch (Exception e){}
             }
         }
     }
 
     public void resetCount(){
-        count = 20;
-        synchronized (lock) {
-            lock.notify();
-        }
+        count = MyConfig.update_frq;     // gq
+        this.interrupt();       // 喚醒
     }
 
     // 更新用，count 不設定成 0 ，主要是因為這個線程大部份的時間都在sleep，
@@ -55,6 +54,11 @@ public class CountDown extends Thread{
     }
 
     public void setPause(boolean b){
-        isPause = b;
+        isPause = b;        // 設成 true 就會暫停
     }
+
+    public void close(){
+        isClose = true;
+    }
+
 }
