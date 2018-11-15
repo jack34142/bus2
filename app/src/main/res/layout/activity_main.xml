@@ -63,15 +63,17 @@
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
+
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"/>
 
                 <ImageButton
                     android:id="@+id/start_cancel"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="#00ffffff"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:padding="8dp"
+                    android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
             </LinearLayout>
 
@@ -89,15 +91,16 @@
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="1"/>
 
                 <ImageButton
                     android:id="@+id/end_cancel"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="#00ffffff"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
+                    android:padding="8dp"
+                    android:layout_gravity="center_vertical"
                     app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
 
             </LinearLayout>

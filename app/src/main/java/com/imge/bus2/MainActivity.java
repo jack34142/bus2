@@ -226,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccessLocation(Location location) {
                     super.onSuccessLocation(location);
                     MapTools.getInstance().setMyPosition(location.getLatitude(), location.getLongitude());
-                    String test = location.getProvider()+" "+LocationUtils.getGPSLocation(MainActivity.this).getProvider();
                 }
 
                 @Override
