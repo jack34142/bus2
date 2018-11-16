@@ -27,25 +27,37 @@
                 android:id="@+id/editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="請輸入站點名稱"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="8dp"
                 android:layout_marginLeft="6dp"
-                android:textSize="15sp"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:hint="請輸入地址或站點名稱"
+                android:inputType="text"
+                android:paddingLeft="8dp"
+                android:textSize="15sp" />
 
             <ImageButton
-                android:id="@+id/search"
+                android:id="@+id/searchAddress"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:paddingTop="7dp"
-                android:paddingBottom="7dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="10dp"
                 android:layout_gravity="center_vertical"
                 android:background="#00ffffff"
-                app:srcCompat="@drawable/ic_forward_gray_24dp"/>
+                android:paddingBottom="7dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="7dp"
+                android:paddingTop="7dp"
+                app:srcCompat="@drawable/ic_pin_drop_gray_24dp" />
+
+            <ImageButton
+                android:id="@+id/searchStop"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:background="#00ffffff"
+                android:paddingBottom="7dp"
+                android:paddingLeft="7dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                app:srcCompat="@drawable/ic_forward_gray_24dp" />
 
         </LinearLayout>
 

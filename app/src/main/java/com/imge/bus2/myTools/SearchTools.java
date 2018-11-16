@@ -3,35 +3,33 @@ package com.imge.bus2.myTools;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.util.DisplayMetrics;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
-import com.imge.bus2.MainActivity;
 import com.imge.bus2.R;
 import com.imge.bus2.TimeActivity;
 import com.imge.bus2.model.KeyBoard;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteStopsDAO;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +40,7 @@ public class SearchTools {
     private int mode = 1;
     private RadioGroup mode_group;      // 選擇模式用
     private RadioButton mode_start;     // 選擇搭車站模式
-    private ImageButton start_cancel, end_cancel, search;
+    private ImageButton start_cancel, end_cancel, searchStop, searchAddress;
     private Button btn_time;
     private Set<String> routeIds_match = new HashSet<>();
     private EditText editText;
@@ -68,9 +66,11 @@ public class SearchTools {
         btn_time.setOnClickListener(myTimeListener);
 
         editText = activity.findViewById(R.id.editText);
-        search = activity.findViewById(R.id.search);
-        search.setOnClickListener(searchListener);
-        search.setOnLongClickListener(searchLongLinstener);
+        searchStop = activity.findViewById(R.id.searchStop);
+        searchStop.setOnClickListener(searchListener);
+        searchStop.setOnLongClickListener(searchLongLinstener);
+        searchAddress = activity.findViewById(R.id.searchAddress);
+        searchAddress.setOnClickListener(searchAddressListener);
     }
 
     // 單例
@@ -153,6 +153,13 @@ public class SearchTools {
         }
     };
 
+    View.OnClickListener searchAddressListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            searchAddress();
+        }
+    };
+
     // 搜尋站點
     private void search(){
         KeyBoard.hideKeyBoard(activity);
@@ -160,7 +167,7 @@ public class SearchTools {
         String str = editText.getText().toString();
         str = str.trim();       // 去頭尾空白
         if (str.equals("")){        // 不為空
-            Toast.makeText(activity, "請輸入內容", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "請輸入站點名稱", Toast.LENGTH_SHORT).show();
             return;
         }else if(str.equals(str_old)){      // 如果搜索文字與上次相同
             index++;        // index +1 ( 查詢用 )
@@ -173,27 +180,81 @@ public class SearchTools {
                 }
             }
 
-            if(strList.isEmpty()){      // 如果找不到相符站點
-                Toast.makeText(activity, "查無此站", Toast.LENGTH_SHORT).show();
-                return;
+            if( !strList.isEmpty()){      // 如果找不到相符站點
+                // 提示隱藏功能
+                Toast.makeText(activity, "長按箭號，可查看全部搜索項", Toast.LENGTH_SHORT).show();
+                index = 0;
             }
-
-            // 提示隱藏功能
-            Toast.makeText(activity, "長按箭號，可查看全部搜索項", Toast.LENGTH_SHORT).show();
-            index = 0;
         }
 
         // 超過 index，歸 0
         if (index >= strList.size()){
             index = 0;
         }
-        MapTools.getInstance().searchStop(strList.get(index));      // 查詢並移到點上
+        if( !strList.isEmpty() ){
+            MapTools.getInstance().searchStop(strList.get(index));      // 查詢並移到點上
+        }else {
+            Toast.makeText(activity, "查無此站", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private synchronized void searchAddress(){
+        KeyBoard.hideKeyBoard(activity);
+
+        final String str = editText.getText().toString().trim();      // 去頭尾空白
+        if (str.equals("")){        // 不為空
+            Toast.makeText(activity, "請輸入地址", Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            Toast.makeText(activity, "搜尋地址會花費較多的時間", Toast.LENGTH_SHORT).show();
+        }
+
+        final Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what){
+                    case 0:
+                        Toast.makeText(activity, "請再試一次", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        List<Address> addresses = (List<Address>) msg.obj;
+                        if ( addresses!=null && !addresses.isEmpty() ){
+                            Double lat = addresses.get(0).getLatitude();
+                            Double lon = addresses.get(0).getLongitude();
+                            MapTools.getInstance().setCenter(lat, lon);
+                            Toast.makeText(activity, "找到該地址", Toast.LENGTH_SHORT).show();
+                        }else{
+                            Toast.makeText(activity, "找不到該地址", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+            }
+        };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
+                try{
+                    List<Address> addresses = geoCoder.getFromLocationName(str, 1);
+
+                    Message msg = new Message();
+                    msg.what = 1;
+                    msg.obj = addresses;
+                    handler.sendMessage(msg);
+                }catch (Exception e){
+                    handler.sendEmptyMessage(0);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
     }
 
     // 設定與調整 dialog
     private void setDialogList(){
         if(strList.isEmpty()){      // 沒有查到站點
-            Toast.makeText(activity, "無搜索項", Toast.LENGTH_SHORT).show();
             return;
         }
 
