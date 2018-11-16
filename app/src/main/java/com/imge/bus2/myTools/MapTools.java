@@ -66,48 +66,6 @@ public class MapTools implements OnMapReadyCallback {
         setListener();
     }
 
-    // 標記一個點
-    public void setMark(String stopName, double latitude, double longitude){
-        LatLng sydney = new LatLng(latitude, longitude);
-        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title(stopName));
-        stopMarkers.put(stopName, marker);
-    }
-
-    // 地圖移到桃園火車站
-    public void setMyPosition(){
-        LatLng sydney = new LatLng(24.989420, 121.313502);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
-    }
-
-    // 標記我的位置
-    public void setMyPosition(Double lat, Double lon){
-        if(mMap == null){
-            return;
-        }
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(lat, lon);
-
-        if(myIcon == null){
-            setCenter(lat, lon);
-            myIcon = mMap.addMarker(
-                    new MarkerOptions()
-                            .position(sydney)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-            );
-        }else{
-            myIcon.setPosition(sydney);
-        }
-
-    }
-
-    // 地圖移到指定點
-    public void setCenter(Double lat, Double lon){
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(lat, lon);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
-    }
-
     // 設定 mark 點擊事件
     public void setListener(){
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -142,6 +100,61 @@ public class MapTools implements OnMapReadyCallback {
             stops.remove(stopName);
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));     // 取消變回紅色
         }
+    }
+
+    // 標記一個點
+    public void setMark(String stopName, double latitude, double longitude){
+        LatLng sydney = new LatLng(latitude, longitude);
+        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title(stopName));
+        stopMarkers.put(stopName, marker);
+    }
+
+    // 標記我的位置
+    public void setMyPosition(Double lat, Double lon){
+        if(mMap == null){
+            return;
+        }
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(lat, lon);
+
+        if(myIcon == null){
+            setCenter(lat, lon);
+            myIcon = mMap.addMarker(
+                    new MarkerOptions()
+                            .position(sydney)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+            );
+        }else{
+            myIcon.setPosition(sydney);
+        }
+
+    }
+
+    // 地圖移到桃園火車站
+    public void setMyPosition(){
+        LatLng sydney = new LatLng(24.989420, 121.313502);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
+    // 地圖移到指定點
+    public void setCenter(Double lat, Double lon){
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(lat, lon);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
+    // 地圖移到指定點
+    public void setCenter(LatLng sydney){
+        // Add a marker in Sydney and move the camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
+    }
+
+    // 地圖移動到指定站點上
+    public void searchStop(String stopName){
+        Marker marker = stopMarkers.get(stopName);
+        marker.showInfoWindow();        // 顯示站點名稱
+        setCenter(marker.getPosition());
     }
 
     // 載入所有公車站牌
