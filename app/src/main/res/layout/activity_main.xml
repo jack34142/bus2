@@ -108,30 +108,18 @@
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-
-<<<<<<< HEAD
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
-=======
                     android:paddingTop="3dp"
                     android:text="搭車站：" />
->>>>>>> search
 
                 <ImageButton
                     android:id="@+id/start_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-<<<<<<< HEAD
-                    android:background="#00ffffff"
-                    android:padding="8dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
-=======
                     android:layout_gravity="center_vertical"
                     android:background="#00ffffff"
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_cancel_gray_20dp" />
->>>>>>> search
+
             </LinearLayout>
 
             <LinearLayout
@@ -148,29 +136,17 @@
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-<<<<<<< HEAD
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
-=======
                     android:paddingTop="3dp"
                     android:text="目的地：" />
->>>>>>> search
 
                 <ImageButton
                     android:id="@+id/end_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-<<<<<<< HEAD
-                    android:background="#00ffffff"
-                    android:padding="8dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
-=======
                     android:layout_gravity="center_vertical"
                     android:background="#00ffffff"
                     android:padding="8dp"
                     app:srcCompat="@drawable/ic_cancel_gray_20dp" />
->>>>>>> search
 
             </LinearLayout>
 
