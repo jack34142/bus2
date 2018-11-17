@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 public class TimeActivity extends AppCompatActivity {
-    Intent intent;
+    private Intent intent;
     public static Handler handler;
     private FragmentManager fragmentManager;
     private ViewPager viewPager;
@@ -46,8 +46,22 @@ public class TimeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onResume() {
+        super.onResume();
+        if (countDown != null){
+            countDown.go();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        countDown.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         countDown.close();
     }
 

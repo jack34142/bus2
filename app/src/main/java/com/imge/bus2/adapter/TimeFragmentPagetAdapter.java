@@ -5,11 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-
 import com.imge.bus2.fragment.TimeFragment;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
