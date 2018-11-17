@@ -56,6 +56,7 @@ public class TimeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         countDown.pause();
+        Toast.makeText(TimeActivity.this, "避免流量偷跑，最小化時會暫停更新", Toast.LENGTH_SHORT).show();
     }
 
     @Override
