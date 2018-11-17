@@ -4,6 +4,19 @@
 
 ## 版本更新
 
+v2.1.4
+
+	1. 新增功能
+	　(1) 搜尋系統
+	　　i. 以公車站牌搜尋
+	　　ii. 以地址搜尋
+	　　iii. 以公車站牌搜尋，可以長按箭號，顯示清單
+
+	未來計劃
+	　(1) 我的最愛
+	　(2) 查看公車抵達每一站的時間表
+
+
 v2.0.0
 
 	1. 新增功能
@@ -28,98 +41,111 @@ v1.0.0
 
 ## 載點
 
-v2.0.0    [google drive 載點](https://drive.google.com/file/d/1D2Fx8AdUsqebIO0NQp5TlNvONxU6zEKz/view?usp=sharing)
-
-v1.1.0　　[google drive 載點](https://drive.google.com/file/d/1BpaNArX1oqmBqNPGCqQfej9VWqUq1C3v/view?usp=sharing)
-
-v1.0.0　　[google drive 載點](https://drive.google.com/file/d/1cYkllY2fPwqCcET_85sY5diz0Mc2KLEp/view?usp=sharing)
+v2.1.4　　[google drive 載點](https://drive.google.com/file/d/1KXq-_sxq5utEyHN_YL7xIdWNRKmDqlMF/view?usp=sharing)
 
 
-## 功能
-1. 顯示你的位置
-2. 顯示所有的桃園站牌
-3. 根據選擇之「搭車站」與「目的地」匹配公車 (可不選)
-4. 顯示匹配公車時刻表
-5. 時刻表會自動更新 (20秒一次)
+## 功能簡介
+1. 自動定位使用者位置
+2. 地圖移動到使用者位置的按鈕
+3. 顯示所有的桃園站牌
+4. 搜尋系統
+5. 根據選擇的「搭車站」與「目的地」匹配公車 (可不選)
+6. 根據匹配公車，提供到站時間列表
+7. 每20秒自動更新時刻表
+8. 手動更新時刻表按鈕
 
 
 ### 運用技術
 
-1.	Google map 
+1. google map
 
-	(1)	Google service sdk
+	(1) google service sdk
 
-	(2)	api申請
+	(2) api申請
 
-	(3)	OnMapReadyCallback介面實作
+	(3) OnMapReadyCallback 介面實作
 
+	(4) mark 
 
-2.	Volley
-
-	(1)	Volley sdk
-
-	(2)	自製Volley功能整合model
+	(5) 搜尋地址的方法
 
 
-3.	SQLite
+2. SQLite
 
-	(1)	MyDBHelper的通用類別
+	(1) MyDBHelper 通用類別
 
-	(2)	實作了2個DAO規範的類別
+	(2) 了解DAO規範，並實作類別
 
-4.	檢測網路功能是否正常的function
 
-5.	FileIO 的2個function
+3. gps
 
-	(1)	讀取
+	(1) LocationUtils 通用類別
 
-	(2)	寫入
+	(2) 手機權限的請求
 
-6.	GPS功能
+	(3) 請求結果的處理
 
-	(1)	LocationUtils的通用類別
 
-	(2)	權限的請求
+4. Volley  -- 下載資料用的工具
 
-	(3)	請求的回傳處理
+	(1) volley sdk
 
-7.	Gson
+	(2) 自製volley功能整合的model
 
-	(1)	Gson format的使用
 
-	(2)	Gson sdk
+5. Gson – 解析 json 用的工具
 
-8.	了解Json的格式
+	(1) Gson SDK
 
-9.	Thread與Handler
+	(2) Gson format 
 
-	(1)	Sleep() 與 interrupt() 的應用
+	　└ 幫助 json 資料製作 bean class
 
-	(2)	Handler與Message的應用
 
-	(3)	runOnUiThread應用
+6. RecyclerView
 
-10.	Dialog － 自訂視窗
+	(1) RecyclerView.Adapter
 
-11.	雙擊返回，退出程式
+	(2) LinearLayoutManager – 直列堆疊
 
-	註1：
+	(3) addItemDecoration – 分割線
 
-		這個專案暫時還沒有使用到fragment、Intent、adapter……等功能，
-		這些也都是我熟悉的功能，並不是不會所以沒用，只是還不需要而已。
 
-	註2：
-	
-		上面有些類別並不是100%我完全獨創的，雖然有些是參考別人的，
-		但上面的功能都是在我已經了解其內容了，才做修改與使用，
-		我並不是那種單純的使用別人的方法，卻不懂其內部的運作的人。
+7. Thread
 
---------------------------------------------------------------------------
+	(1) sleep()、interrupt()
 
-	提醒：
-		
-		如果你測試時使用的是電腦的虛擬裝置，
-		請確定這個裝置能不能接收NETWORK_PROVIDER的gps資訊，
-		如果你想要讓他改用GPS_PROVIDER，
-		可以修改MainActivity的第150行，
-		不過還是建議用手機測試功能。
+	(2) Handler、Message、runOnUiThread
+
+
+8. Intent
+
+	(1) startActivity
+
+	(2) Bundle
+
+	(3) intent.putExtra
+
+	(4) 為新的activity設置返回鍵
+
+
+9. Fragment
+
+	(1) FragmentStatePagerAdapter
+
+	(2) tabLayout、ViewPager 關聯
+
+
+10. 其他
+
+	(1) 包裝FileIO讀寫方法
+
+	(2) 檢測網路功能的方法
+
+	(3) 關閉鍵盤的方法
+
+	(4) MyConfig類別 
+
+	　└ 用來放一些系統常數
+
+	(5) 雙擊返回鍵退出應用
