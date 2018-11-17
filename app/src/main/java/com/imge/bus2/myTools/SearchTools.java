@@ -1,27 +1,51 @@
 package com.imge.bus2.myTools;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
 import com.imge.bus2.R;
+import com.imge.bus2.TimeActivity;
+import com.imge.bus2.model.KeyBoard;
 import com.imge.bus2.mySQLite.BusStopDAO;
 import com.imge.bus2.mySQLite.RouteStopsDAO;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 public class SearchTools {
-    Activity activity;
+    private Activity activity;
     private static SearchTools instance;
     private TextView start, end, match;
     private int mode = 1;
-    ImageButton start_cancel, end_cancel;
+    private RadioGroup mode_group;      // 選擇模式用
+    private RadioButton mode_start;     // 選擇搭車站模式
+    private ImageButton start_cancel, end_cancel, searchStop, searchAddress;
+    private Button btn_time;
     private Set<String> routeIds_match = new HashSet<>();
+    private EditText editText;
+    private ProgressBar progressBar;
 
     private SearchTools(Activity activity) {
         super();
@@ -30,31 +54,28 @@ public class SearchTools {
         end = activity.findViewById(R.id.end);
         match = activity.findViewById(R.id.match);
 
+        mode_group = activity.findViewById(R.id.mode);
+        mode_start = activity.findViewById(R.id.mode_start);
+        mode_start.setChecked(true);
+        mode_group.setOnCheckedChangeListener(myRadioListener);
+
         start_cancel = activity.findViewById(R.id.start_cancel);
         end_cancel = activity.findViewById(R.id.end_cancel);
         start_cancel.setOnClickListener(startCancelListener);
         end_cancel.setOnClickListener(endCancelListener);
+
+        btn_time = activity.findViewById(R.id.time);
+        btn_time.setOnClickListener(myTimeListener);
+
+        editText = activity.findViewById(R.id.editText);
+        searchStop = activity.findViewById(R.id.searchStop);
+        searchStop.setOnClickListener(searchListener);
+        searchStop.setOnLongClickListener(searchLongLinstener);
+        searchAddress = activity.findViewById(R.id.searchAddress);
+        searchAddress.setOnClickListener(searchAddressListener);
+
+        progressBar = activity.findViewById(R.id.progressBar);
     }
-
-    View.OnClickListener startCancelListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            MapTools.stops_start = new HashSet<>();
-            show(MapTools.stops_start);
-            changeMode();
-            matchRoutes();
-        }
-    };
-
-    View.OnClickListener endCancelListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            MapTools.stops_end = new HashSet<>();
-            show(MapTools.stops_end);
-            changeMode();
-            matchRoutes();
-        }
-    };
 
     // 單例
     public static SearchTools getInstance(Activity activity){
@@ -65,6 +86,223 @@ public class SearchTools {
         }
         return instance;
     }
+
+    // 改變模式
+    RadioGroup.OnCheckedChangeListener myRadioListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            switch (checkedId){
+                case R.id.mode_start:
+                    mode = 1;
+                    break;
+                case R.id.mode_end:
+                    mode = 2;
+                    break;
+            }
+            changeMode();
+        }
+    };
+
+    // 顯示所選路線時刻表
+    View.OnClickListener myTimeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Set<String> routeIds_match = getRouteIds_match();
+            Intent intent = new Intent(activity, TimeActivity.class);
+            intent.putExtra("routeIds_match", (HashSet<String>)routeIds_match );
+            intent.putExtra("stops_start", (HashSet<String>)MapTools.stops_start );
+            activity.startActivity(intent);
+        }
+    };
+
+    View.OnClickListener startCancelListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            MapTools.stops_start = new HashSet<>();
+            show(1);
+            changeMode();
+            matchRoutes();
+        }
+    };
+
+    View.OnClickListener endCancelListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            MapTools.stops_end = new HashSet<>();
+            show(2);
+            changeMode();
+            matchRoutes();
+        }
+    };
+
+    private int index = 0;
+    private String str_old = "";
+    private List<String> strList = new ArrayList<>();
+    View.OnClickListener searchListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            search();
+        }
+    };
+
+    Dialog dialog_list;
+    ListView listView;
+    Button list_cancel;
+    View.OnLongClickListener searchLongLinstener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            search();
+            setDialogList();
+            return true;
+        }
+    };
+
+    View.OnClickListener searchAddressListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            searchAddress();
+        }
+    };
+
+    // 搜尋站點
+    private void search(){
+        KeyBoard.hideKeyBoard(activity);
+
+        String str = editText.getText().toString();
+        str = str.trim();       // 去頭尾空白
+        if (str.equals("")){        // 不為空
+            Toast.makeText(activity, "請輸入站點名稱", Toast.LENGTH_SHORT).show();
+            return;
+        }else if(str.equals(str_old)){      // 如果搜索文字與上次相同
+            index++;        // index +1 ( 查詢用 )
+        }else{      // 如果搜索文字與上次不同
+            str_old = str;
+            strList = new ArrayList<>();        // 新的 List
+            for(String stopName : MapTools.stopMarkers.keySet() ){
+                if (stopName.indexOf(str) >= 0){        // 找到相符的站點
+                    strList.add(stopName);      // 加到 List
+                }
+            }
+
+            if( !strList.isEmpty()){      // 如果找不到相符站點
+                // 提示隱藏功能
+                Toast.makeText(activity, "長按箭號，可查看全部搜索項", Toast.LENGTH_SHORT).show();
+                index = 0;
+            }
+        }
+
+        // 超過 index，歸 0
+        if (index >= strList.size()){
+            index = 0;
+        }
+        if( !strList.isEmpty() ){
+            MapTools.getInstance().searchStop(strList.get(index));      // 查詢並移到點上
+        }else {
+            Toast.makeText(activity, "查無此站", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private synchronized void searchAddress(){
+        KeyBoard.hideKeyBoard(activity);
+
+        final String str = editText.getText().toString().trim();      // 去頭尾空白
+        if (str.equals("")){        // 不為空
+            Toast.makeText(activity, "請輸入地址", Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        final Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                progressBar.setVisibility(View.GONE);
+                switch (msg.what){
+                    case 0:
+                        Toast.makeText(activity, "請再試一次", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        List<Address> addresses = (List<Address>) msg.obj;
+                        if ( addresses!=null && !addresses.isEmpty() ){
+                            Double lat = addresses.get(0).getLatitude();
+                            Double lon = addresses.get(0).getLongitude();
+                            MapTools.getInstance().setCenter(lat, lon);
+                        }else{
+                            Toast.makeText(activity, "找不到該地址", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+
+            }
+        };
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
+                try{
+                    List<Address> addresses = geoCoder.getFromLocationName(str, 1);
+
+                    Message msg = new Message();
+                    msg.what = 1;
+                    msg.obj = addresses;
+                    handler.sendMessage(msg);
+                }catch (Exception e){
+                    handler.sendEmptyMessage(0);
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    // 設定與調整 dialog
+    private void setDialogList(){
+        if(strList.isEmpty()){      // 沒有查到站點
+            return;
+        }
+
+        dialog_list = new Dialog(activity);
+        dialog_list.setContentView(R.layout.dialog_list);
+
+        // 列出站點
+        listView = dialog_list.findViewById(R.id.listView);
+        ArrayAdapter adapter = new ArrayAdapter(activity, android.R.layout.simple_list_item_1, strList);
+        listView.setAdapter(adapter);
+
+        // 取消按鍵
+        list_cancel = dialog_list.findViewById(R.id.list_cancel);
+        list_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_list.cancel();
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                index = position-1;     // 改變 index 並執行 search
+                search();       // search 會 index++
+                dialog_list.dismiss();
+            }
+        });
+
+        dialog_list.show();
+
+//        // 螢幕大小 .d.heightPixels = 高 , d.widthPixels = 寬
+//        DisplayMetrics d = activity.getResources().getDisplayMetrics();
+//
+//        // Dialog 大小 p.height = 高 , p.width = 寬
+//        WindowManager.LayoutParams p = new WindowManager.LayoutParams();
+//        p.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//        p.width = (int) (d.widthPixels * 0.85);
+//
+//        // 修改 dialog 視窗設定
+//        dialog_list.getWindow().setAttributes(p);
+    };
 
     // 取得 mode ( 1=選擇搭車站, 2=選擇目的地 )
     public int getMode(){
@@ -88,6 +326,20 @@ public class SearchTools {
             case 2:
                 stops_str = "目的地：" + stops_str;
                 end.setText(stops_str);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // 刪除用的
+    public void show(int mode){
+        switch (mode){
+            case 1:
+                start.setText("搭車站：");
+                break;
+            case 2:
+                end.setText("目的地：");
                 break;
             default:
                 break;
@@ -135,7 +387,7 @@ public class SearchTools {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));     // 全部點設成紅色
 
             if(!stops_match.isEmpty()){
-                if( stops_match.contains(stopName) ){
+                if( stops_match.contains(stopName)){
                     marker.setVisible(true);        // 經過的站牌打開
                 }else{
                     marker.setVisible(false);       // 不相關的關掉

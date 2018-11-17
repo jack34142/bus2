@@ -1,7 +1,6 @@
 package com.imge.bus2;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Handler;
@@ -16,11 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -32,11 +28,8 @@ import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
 import com.imge.bus2.myTools.SearchTools;
 import com.imge.bus2.sharedPreferences.MyLog;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     public static Handler handler;
@@ -49,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageButton btn_show, btn_hide;     // 最上面選單的開關
     private LinearLayout top_menu;      // 最上面的選單
-    private RadioGroup mode_group;      // 選擇模式用
-    private RadioButton mode_start;     // 選擇搭車站模式
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,13 +84,7 @@ public class MainActivity extends AppCompatActivity {
         btn_show.setOnClickListener(showListener);
         btn_hide.setOnClickListener(hideListener);
 
-        mode_group = findViewById(R.id.mode);
-        mode_start = findViewById(R.id.mode_start);
-        mode_start.setChecked(true);
-        mode_group.setOnCheckedChangeListener(myRadioListener);
-
-        Button btn_time = findViewById(R.id.time);
-        btn_time.setOnClickListener(myTimeListener);
+        SearchTools.getInstance(MainActivity.this);
     }
 
     // 最上面的選單顯示
@@ -119,34 +104,6 @@ public class MainActivity extends AppCompatActivity {
             top_menu.setVisibility(View.GONE);
             btn_show.setVisibility(View.VISIBLE);
             btn_hide.setVisibility(View.GONE);
-        }
-    };
-
-    // 改變模式
-    RadioGroup.OnCheckedChangeListener myRadioListener = new RadioGroup.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            switch (checkedId){
-                case R.id.mode_start:
-                    SearchTools.getInstance(MainActivity.this).setMode(1);
-                    break;
-                case R.id.mode_end:
-                    SearchTools.getInstance(MainActivity.this).setMode(2);
-                    break;
-            }
-            SearchTools.getInstance(MainActivity.this).changeMode();
-        }
-    };
-
-    // 顯示所選路線時刻表
-    View.OnClickListener myTimeListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Set<String> routeIds_match = SearchTools.getInstance(MainActivity.this).getRouteIds_match();
-            Intent intent = new Intent(MainActivity.this, TimeActivity.class);
-            intent.putExtra("routeIds_match", (HashSet<String>)routeIds_match );
-            intent.putExtra("stops_start", (HashSet<String>)MapTools.stops_start );
-            startActivity(intent);
         }
     };
 

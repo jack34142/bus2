@@ -53,8 +53,13 @@ public class CountDown extends Thread{
         count = 1;
     }
 
-    public void setPause(boolean b){
-        isPause = b;        // 設成 true 就會暫停
+    public void pause(){
+        isPause = true;        // 設成 true 就會暫停
+    }
+
+    public void go(){
+        isPause = false;
+        this.interrupt();
     }
 
     public void close(){

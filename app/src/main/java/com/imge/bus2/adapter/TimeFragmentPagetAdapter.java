@@ -5,18 +5,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-
 import com.imge.bus2.fragment.TimeFragment;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TimeFragmentPagetAdapter extends FragmentStatePagerAdapter {
-    List<List<String>> routeList;
-    Map<Integer, TimeFragment> myFragment = new HashMap<>();
+    private List<List<String>> routeList;
+    private Map<Integer, TimeFragment> myFragment = new HashMap<>();
 
     public TimeFragmentPagetAdapter(FragmentManager fm, List<List<String>> routeList) {
         super(fm);
