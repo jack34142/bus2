@@ -13,6 +13,7 @@
         android:layout_height="match_parent"/>
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -20,8 +21,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#f0ffffff">
+            android:background="#f0ffffff"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/editText"
@@ -66,10 +67,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#f0ffffff"
+            android:clickable="true"
             android:orientation="vertical"
-            android:paddingTop="3dp"
             android:paddingBottom="3dp"
-            android:clickable="true">
+            android:paddingTop="3dp">
 
             <RadioGroup
                 android:id="@+id/mode"
@@ -82,14 +83,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="選擇搭車站"/>
+                    android:text="選擇搭車站" />
 
                 <RadioButton
                     android:id="@+id/mode_end"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="選擇目的地"/>
+                    android:text="選擇目的地" />
 
             </RadioGroup>
 
@@ -102,23 +103,23 @@
                     android:id="@+id/start"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="搭車站："
-                    android:paddingTop="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
 
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
+                    android:paddingTop="3dp"
+                    android:text="搭車站：" />
 
                 <ImageButton
                     android:id="@+id/start_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:background="#00ffffff"
                     android:padding="8dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
+                    app:srcCompat="@drawable/ic_cancel_gray_20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -130,22 +131,22 @@
                     android:id="@+id/end"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="目的地："
-                    android:paddingTop="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
+                    android:paddingTop="3dp"
+                    android:text="目的地：" />
 
                 <ImageButton
                     android:id="@+id/end_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:background="#00ffffff"
                     android:padding="8dp"
-                    android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_cancel_gray_20dp"/>
+                    app:srcCompat="@drawable/ic_cancel_gray_20dp" />
 
             </LinearLayout>
 
@@ -158,55 +159,63 @@
                     android:id="@+id/match"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="匹配公車："
-                    android:paddingTop="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:paddingBottom="2dp"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"/>
+                    android:paddingTop="3dp"
+                    android:text="匹配公車：" />
 
                 <Button
                     android:id="@+id/time"
                     android:layout_width="72dp"
                     android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginRight="6dp"
-                    android:text="時刻表"
-                    android:layout_gravity="center_vertical"/>
+                    android:text="時刻表" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:background="@drawable/show_button_shape"
-        android:orientation="vertical"
-        android:clickable="true">
+        <LinearLayout
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/show_button_shape"
+            android:clickable="true"
+            android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/show"
-            android:layout_width="match_parent"
-            android:layout_height="18dp"
-            android:background="#00ffffff"
-            app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp"
-            android:visibility="gone"/>
+            <ImageButton
+                android:id="@+id/show"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:background="#00ffffff"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
 
-        <ImageButton
-            android:id="@+id/hide"
-            android:layout_width="match_parent"
-            android:layout_height="18dp"
-            android:background="#00ffffff"
-            app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp"/>
+            <ImageButton
+                android:id="@+id/hide"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:background="#00ffffff"
+                app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
-
-    </LinearLayout>
-
-
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/map"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout2"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>

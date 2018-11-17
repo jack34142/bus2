@@ -28,11 +28,8 @@ import com.imge.bus2.myTools.DataDownload;
 import com.imge.bus2.myTools.MapTools;
 import com.imge.bus2.myTools.SearchTools;
 import com.imge.bus2.sharedPreferences.MyLog;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     public static Handler handler;

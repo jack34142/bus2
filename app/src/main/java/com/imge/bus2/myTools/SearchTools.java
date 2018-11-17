@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -44,6 +45,7 @@ public class SearchTools {
     private Button btn_time;
     private Set<String> routeIds_match = new HashSet<>();
     private EditText editText;
+    private ProgressBar progressBar;
 
     private SearchTools(Activity activity) {
         super();
@@ -71,6 +73,8 @@ public class SearchTools {
         searchStop.setOnLongClickListener(searchLongLinstener);
         searchAddress = activity.findViewById(R.id.searchAddress);
         searchAddress.setOnClickListener(searchAddressListener);
+
+        progressBar = activity.findViewById(R.id.progressBar);
     }
 
     // 單例
@@ -206,13 +210,15 @@ public class SearchTools {
             Toast.makeText(activity, "請輸入地址", Toast.LENGTH_SHORT).show();
             return;
         }else{
-            Toast.makeText(activity, "搜尋地址會花費較多的時間", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         final Handler handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
+
+                progressBar.setVisibility(View.GONE);
                 switch (msg.what){
                     case 0:
                         Toast.makeText(activity, "請再試一次", Toast.LENGTH_SHORT).show();
@@ -223,12 +229,12 @@ public class SearchTools {
                             Double lat = addresses.get(0).getLatitude();
                             Double lon = addresses.get(0).getLongitude();
                             MapTools.getInstance().setCenter(lat, lon);
-                            Toast.makeText(activity, "找到該地址", Toast.LENGTH_SHORT).show();
                         }else{
                             Toast.makeText(activity, "找不到該地址", Toast.LENGTH_SHORT).show();
                         }
                         break;
                 }
+
             }
         };
 
