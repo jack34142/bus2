@@ -2,7 +2,6 @@ package com.imge.bus2.sharedPreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.imge.bus2.config.MyConfig;
 
 public class MyLog {

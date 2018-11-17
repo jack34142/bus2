@@ -14,10 +14,10 @@ import com.imge.bus2.myTools.TimeSort;
 import java.util.List;
 
 public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
-    Context context;
-    LayoutInflater layoutInflater;
-    List<List<String>> routeList;
-    RouteNameDAO routeNameDAO;
+    private Context context;
+    private LayoutInflater layoutInflater;
+    private List<List<String>> routeList;
+    private RouteNameDAO routeNameDAO;
 
     public TimeRecyclerViewAdapter(Context context, List<List<String>> routeList, int goBack) {
         super();

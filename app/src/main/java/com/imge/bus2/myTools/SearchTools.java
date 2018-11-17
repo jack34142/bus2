@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SearchTools {
-    Activity activity;
+    private Activity activity;
     private static SearchTools instance;
     private TextView start, end, match;
     private int mode = 1;

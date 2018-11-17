@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeFragmentPagetAdapter extends FragmentStatePagerAdapter {
-    List<List<String>> routeList;
-    Map<Integer, TimeFragment> myFragment = new HashMap<>();
+    private List<List<String>> routeList;
+    private Map<Integer, TimeFragment> myFragment = new HashMap<>();
 
     public TimeFragmentPagetAdapter(FragmentManager fm, List<List<String>> routeList) {
         super(fm);

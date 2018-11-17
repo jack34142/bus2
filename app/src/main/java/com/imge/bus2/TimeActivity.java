@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.imge.bus2.adapter.TimeFragmentPagetAdapter;
 import com.imge.bus2.myTools.CountDown;
 import com.imge.bus2.myTools.DataDownload;
-
 import java.util.List;
 import java.util.Set;
 
