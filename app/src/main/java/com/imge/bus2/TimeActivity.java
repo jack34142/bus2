@@ -40,6 +40,7 @@ public class TimeActivity extends AppCompatActivity {
         initView();
         setHandler();
 
+        Toast.makeText(TimeActivity.this, "避免流量偷跑，最小化時會暫停更新", Toast.LENGTH_SHORT).show();
         countDown = new CountDown();        // 倒數計時工具
         countDown.start();      // Thread 開始運行
     }
@@ -56,7 +57,6 @@ public class TimeActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         countDown.pause();
-        Toast.makeText(TimeActivity.this, "避免流量偷跑，最小化時會暫停更新", Toast.LENGTH_SHORT).show();
     }
 
     @Override

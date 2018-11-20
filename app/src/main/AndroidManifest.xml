@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TimeActivity"></activity>
+        <activity android:name=".Time2Activity"></activity>
     </application>
 
 </manifest>

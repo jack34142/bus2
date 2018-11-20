@@ -20,7 +20,7 @@
         android:id="@+id/timeList_nameZh"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1.55"
+        android:layout_weight="1"
         android:paddingLeft="6dp"
         android:paddingRight="8dp"
         android:text="路線名稱"
@@ -30,7 +30,7 @@
         android:id="@+id/timeList_nextStop"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="0.68"
         android:paddingLeft="6dp"
         android:text="當前位置"
         android:textSize="18sp" />

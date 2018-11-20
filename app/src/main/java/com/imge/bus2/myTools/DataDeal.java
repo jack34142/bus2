@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.imge.bus2.MainActivity;
+import com.imge.bus2.Time2Activity;
 import com.imge.bus2.TimeActivity;
 import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.ComeTimeBean;
@@ -186,6 +187,7 @@ public class DataDeal {
     }
 
     int last_value;     // 上一站的時間 ( 用來判斷公車的下一站用的 )
+    // 處理公車預估時間
     public void dealComeTime(String response, Set<String> routeId_set, Set<String> stops_start){
 
         // 因為會有同名的站點，所以我在站名後面加數字做區別
@@ -195,11 +197,11 @@ public class DataDeal {
         Gson gson = new Gson();
     /* routeList.add( timeList )  >> 一筆資料 一個路線
         * List<String> timeList;
-        * index = 1 >> routeId
-        * index = 2 >> comeTime_go
-        * index = 3 >> nextStop_go
-        * index = 4 >> comeTime_back
-        * index = 5 >> nextStop_back
+        * index = 0 >> routeId
+        * index = 1 >> comeTime_go
+        * index = 2 >> nextStop_go
+        * index = 3 >> comeTime_back
+        * index = 4 >> nextStop_back
         * */
         List<List<String>> routeList = new ArrayList<>();
 
@@ -244,6 +246,49 @@ public class DataDeal {
             msg.what = 0;
             msg.obj = routeList;
             TimeActivity.handler.handleMessage(msg);
+
+        }catch (Exception e){
+            Log.e(TAG,"dealComeTime() 解析 json 失敗");
+            e.printStackTrace();
+        }
+
+    }
+
+    // 處理特定公車抵達時間
+    public void dealComeTime(String response, String routeId, int goBack){
+        Gson gson = new Gson();
+        /* routeList.add( timeList )  >> 一筆資料 一個路線
+         * List<String> timeList;
+         * index = 0 >> comeTime
+         * index = 1 >> stopName
+         * */
+        List<List<String>> routeList = new ArrayList<>();
+
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray(routeId);
+
+            int len_jsonArray = jsonArray.length();
+            for (int i=0; i<len_jsonArray; i++){
+
+                ComeTimeBean comeTimeBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), ComeTimeBean.class);
+
+                if(comeTimeBean.getGoBack() == goBack){
+                    List<String> timeList = new ArrayList<>();
+                    timeList.add(transValue(comeTimeBean));
+                    timeList.add(comeTimeBean.getStopName());
+
+                    routeList.add(timeList);
+                }else{
+                    continue;
+                }
+
+            }
+
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = routeList;
+            Time2Activity.handler.handleMessage(msg);
 
         }catch (Exception e){
             Log.e(TAG,"dealComeTime() 解析 json 失敗");
@@ -300,6 +345,21 @@ public class DataDeal {
             }
         }
         return nextStop;
+    }
+
+    // 跟據 value 轉成對應文字
+    private String transValue(ComeTimeBean comeTimeBean){
+        String value = comeTimeBean.getValue();
+
+        if (value.equals("null")){
+            return comeTimeBean.getComeTime();
+        }else if(value.equals("-3")){
+            return "末班已過";
+        }else if(value.equals("0")){
+            return "即將到站";
+        }else{
+            return value + " 分";
+        }
     }
 
 

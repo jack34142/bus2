@@ -112,6 +112,31 @@ public class DataDownload {
         MyVolley.getInstance(context).addToRequestQue(request);
     }
 
+    // 下載特定公車的抵達時間
+    public void getComeTime(final String routeId, final int goBack){
+
+        request = new StringRequest(MyConfig.getComeTime_url + routeId, new Response.Listener<String>() {
+            @Override
+            public void onResponse(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataDeal.dealComeTime(response, routeId, goBack);
+                    }
+                }).start();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "getComeTime() 出錯");
+                error.printStackTrace();
+                MyVolley.getInstance(context).addToRequestQue(request);
+            }
+        });
+
+        MyVolley.getInstance(context).addToRequestQue(request);
+    }
+
     private void errorThread(final VolleyError error, final String msg){
         new Thread(new Runnable() {
             @Override
