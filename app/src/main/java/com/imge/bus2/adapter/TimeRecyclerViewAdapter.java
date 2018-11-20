@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.imge.bus2.R;
 import com.imge.bus2.Time2Activity;
 import com.imge.bus2.mySQLite.RouteNameDAO;
-import com.imge.bus2.myTools.TimeSort;
 import java.util.List;
 
 public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
@@ -27,12 +26,8 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
         routeNameDAO = new RouteNameDAO(context);
+
         this.goBack = goBack;
-
-        // 依照抵達時間重新排序
-        TimeSort timeSort = new TimeSort(routeList, goBack);
-        routeList = timeSort.group();
-
         this.routeList = routeList;
     }
 
@@ -96,7 +91,8 @@ public class TimeRecyclerViewAdapter extends RecyclerView.Adapter {
         }
     }
 
-
-
+    public void updateData(List<List<String>> routeList){
+        this.routeList = routeList;
+    }
 
 }

@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.imge.bus2.adapter.Time2RecyclerViewAdapter;
 import com.imge.bus2.myTools.DataDownload;
 import java.util.List;
@@ -80,6 +81,7 @@ public class Time2Activity extends AppCompatActivity {
                 }else{
                     adapter.updateData(routeList);
                     adapter.notifyDataSetChanged();
+                    Toast.makeText(Time2Activity.this, "更新完成", Toast.LENGTH_SHORT).show();
                 }
             }
         });

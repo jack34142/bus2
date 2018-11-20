@@ -1,6 +1,5 @@
 package com.imge.bus2.fragment;
 
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.imge.bus2.R;
 import com.imge.bus2.adapter.TimeRecyclerViewAdapter;
+import com.imge.bus2.myTools.TimeSort;
 import java.util.List;
 
 /**
@@ -37,8 +37,18 @@ public class TimeFragment extends Fragment {
 
     // 更新列表用
     public void updateAdapter(List<List<String>> routeList){
-        adapter = new TimeRecyclerViewAdapter(activity, routeList, goBack);
-        timeRecyclerView.setAdapter(adapter);
+
+        // 依照抵達時間重新排序
+        TimeSort timeSort = new TimeSort(routeList, goBack);
+        routeList = timeSort.group();
+
+        if(adapter == null){
+            adapter = new TimeRecyclerViewAdapter(activity, routeList, goBack);
+            timeRecyclerView.setAdapter(adapter);
+        }else{
+            adapter.updateData(routeList);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     // initial View
