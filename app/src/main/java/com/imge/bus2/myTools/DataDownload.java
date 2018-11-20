@@ -11,6 +11,7 @@ import com.imge.bus2.MainActivity;
 import com.imge.bus2.config.MyConfig;
 import com.imge.bus2.model.MyInterent;
 import com.imge.bus2.model.MyVolley;
+import com.imge.bus2.mySQLite.FavoriteDAO;
 import com.imge.bus2.mySQLite.RouteNameDAO;
 import java.util.Map;
 import java.util.Set;
@@ -129,6 +130,34 @@ public class DataDownload {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e(TAG, "getComeTime() 出錯");
+                error.printStackTrace();
+                MyVolley.getInstance(context).addToRequestQue(request);
+            }
+        });
+
+        MyVolley.getInstance(context).addToRequestQue(request);
+    }
+
+    // 下載我的最愛公車的抵達時間
+    public void getFavorite(Set<String> routeId_set){
+        String routeIds = routeId_set.toString();
+        routeIds = routeIds.substring(1,routeIds.length()-1);
+        routeIds = routeIds.replace(", ",",");
+
+        request = new StringRequest(MyConfig.getComeTime_url + routeIds, new Response.Listener<String>() {
+            @Override
+            public void onResponse(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataDeal.dealFavorite(response);
+                    }
+                }).start();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(TAG, "getFavorite() 出錯");
                 error.printStackTrace();
                 MyVolley.getInstance(context).addToRequestQue(request);
             }

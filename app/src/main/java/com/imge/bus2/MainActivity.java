@@ -1,6 +1,7 @@
 package com.imge.bus2;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Handler;
@@ -266,6 +267,10 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.where:
                 setWhereAmI();      // 地圖移到我的位置
+                break;
+            case R.id.favorite:
+                Intent intent = new Intent(this, FavoriteActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;

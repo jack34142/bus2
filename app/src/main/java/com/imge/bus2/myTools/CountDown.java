@@ -4,10 +4,10 @@ import android.os.Message;
 import com.imge.bus2.TimeActivity;
 import com.imge.bus2.config.MyConfig;
 
-public class CountDown extends Thread{
-    private int count = 0;      // 計時用
-    private boolean isPause = false;     // 判斷是否暫停
-    private boolean isClose = false;
+public abstract class CountDown extends Thread{
+    protected int count = 0;      // 計時用
+    protected boolean isPause = false;     // 判斷是否暫停
+    protected boolean isClose = false;
 
     @Override
     public void run() {
@@ -16,14 +16,12 @@ public class CountDown extends Thread{
         while ( !isClose ){
             if( !isPause ){     // 運行中
 
-                // 顯示當前秒數
-                Message msg = new Message();
-                msg.what = 2;
-                msg.arg1 = count;
-                TimeActivity.handler.sendMessage(msg);
+                // 每1秒執行一次的方法
+                perSecond();
 
                 if(count == 0){     // 數到 0 更新
-                    TimeActivity.handler.sendEmptyMessage(1);
+                    // 每20秒執行一次的方法
+                    excute();
                     try{
                         Thread.sleep(Long.MAX_VALUE);
                     }catch (Exception e){}
@@ -65,5 +63,11 @@ public class CountDown extends Thread{
     public void close(){
         isClose = true;
     }
+
+    // 每20秒執行一次的方法
+    public abstract void excute();
+
+    // 每1秒執行一次的方法 (倒數)
+    public abstract void perSecond();
 
 }

@@ -11,25 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TimeFragmentPagetAdapter extends FragmentStatePagerAdapter {
-    private List<List<String>> routeList;
-    private Map<Integer, TimeFragment> myFragment = new HashMap<>();
+public abstract class TimeFragmentPagerAdapter extends FragmentStatePagerAdapter {
+    protected List<List<String>> routeList;
+    protected Map<Integer, TimeFragment> myFragment = new HashMap<>();
 
-    public TimeFragmentPagetAdapter(FragmentManager fm, List<List<String>> routeList) {
+    public TimeFragmentPagerAdapter(FragmentManager fm, List<List<String>> routeList) {
         super(fm);
         this.routeList = routeList;
     }
 
     @Override
     public Fragment getItem(int position) {
-        if( myFragment.keySet().contains(position) ){
-            return myFragment.get(position);
-        }else{
-            TimeFragment fragment = new TimeFragment();
-            fragment.setData(routeList, position+1 );
-            myFragment.put(position, fragment);
-            return fragment;
-        }
+        return createItem(position);
     }
 
     @Override
@@ -64,5 +57,7 @@ public class TimeFragmentPagetAdapter extends FragmentStatePagerAdapter {
             fragment.updateAdapter(routeList);
         }
     }
+
+    public abstract Fragment createItem(int position);
 
 }

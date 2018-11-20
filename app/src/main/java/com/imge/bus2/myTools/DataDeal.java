@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Message;
 import android.util.Log;
 import com.google.gson.Gson;
+import com.imge.bus2.FavoriteActivity;
 import com.imge.bus2.MainActivity;
 import com.imge.bus2.Time2Activity;
 import com.imge.bus2.TimeActivity;
@@ -11,6 +12,7 @@ import com.imge.bus2.bean.BusStopsBean;
 import com.imge.bus2.bean.ComeTimeBean;
 import com.imge.bus2.bean.RouteNameBean;
 import com.imge.bus2.mySQLite.BusStopDAO;
+import com.imge.bus2.mySQLite.FavoriteDAO;
 import com.imge.bus2.mySQLite.RouteNameDAO;
 import com.imge.bus2.mySQLite.RouteStopsDAO;
 import com.imge.bus2.sharedPreferences.MyLog;
@@ -208,8 +210,8 @@ public class DataDeal {
         try{
             JSONObject jsonObject = new JSONObject(response);
             for(String routeId : routeId_set){
-                String comeTime_go, nextStop_go, comeTime_back, nextStop_back;
-                comeTime_go = nextStop_go = comeTime_back = nextStop_back = "";
+                String comeTime_go, nextStop_go, comeTime_back, nextStop_back, arriveStop_go, arriveStop_back;
+                comeTime_go = nextStop_go = comeTime_back = nextStop_back = arriveStop_go = arriveStop_back = "";
 
                 List<String> timeList = new ArrayList<>();
                 JSONArray jsonArray = jsonObject.getJSONArray(routeId);
@@ -223,10 +225,16 @@ public class DataDeal {
                         case 1:
                             nextStop_go = getNextStop(nextStop_go, comeTime_go, comeTimeBean);      // 找下一站站點
                             comeTime_go = getComeTime(comeTime_go, comeTimeBean, stops_start);      // 找抵達時間
+                            if(arriveStop_go.equals("") && !comeTime_go.equals("")){
+                                arriveStop_go = comeTimeBean.getStopName();
+                            }
                             break;
                         case 2:
                             nextStop_back = getNextStop(nextStop_back, comeTime_back, comeTimeBean);        // 找下一站站點
                             comeTime_back = getComeTime(comeTime_back, comeTimeBean, stops_start);      // 找抵達時間
+                            if(arriveStop_back.equals("") && !comeTime_back.equals("")){
+                                arriveStop_back = comeTimeBean.getStopName();
+                            }
                             break;
                         default:
                             break;
@@ -238,6 +246,8 @@ public class DataDeal {
                 timeList.add(nextStop_go);
                 timeList.add(comeTime_back);
                 timeList.add(nextStop_back);
+                timeList.add(arriveStop_go);
+                timeList.add(arriveStop_back);
 
                 routeList.add(timeList);
             }
@@ -360,6 +370,101 @@ public class DataDeal {
         }else{
             return value + " 分";
         }
+    }
+
+    // 處理公車預估時間
+    public void dealFavorite(String response){
+
+        Gson gson = new Gson();
+        /* routeList.add( timeList )  >> 一筆資料 一個路線
+         * List<String> timeList;
+         * index = 0 >> routeId
+         * index = 1 >> comeTime_go
+         * index = 2 >> nextStop_go
+         * index = 3 >> comeTime_back
+         * index = 4 >> nextStop_back
+         * */
+        List<List<String>> routeList = new ArrayList<>();
+
+        FavoriteDAO favoriteDAO = new FavoriteDAO(context);
+        Set<String> routeId_set = favoriteDAO.getAll();
+
+        try{
+            JSONObject jsonObject = new JSONObject(response);
+            for(String routeId : routeId_set){
+                String comeTime_go, nextStop_go, comeTime_back, nextStop_back, arriveStop_go, arriveStop_back;
+                comeTime_go = nextStop_go = comeTime_back = nextStop_back = "";
+
+                arriveStop_go = favoriteDAO.get(routeId, 1);
+                arriveStop_back = favoriteDAO.get(routeId, 2);
+
+                List<String> timeList = new ArrayList<>();
+                JSONArray jsonArray = jsonObject.getJSONArray(routeId);
+
+                int len_jsonArray = jsonArray.length();
+                for (int i=0; i<len_jsonArray; i++){
+                    ComeTimeBean comeTimeBean = gson.fromJson(jsonArray.getJSONObject(i).toString(), ComeTimeBean.class);
+
+                    int goBack = comeTimeBean.getGoBack();
+                    switch(goBack){
+                        case 1:
+                            if(arriveStop_go.equals("-1") || arriveStop_go.equals("-2")){
+                                continue;
+                            }
+
+                            nextStop_go = getNextStop(nextStop_go, comeTime_go, comeTimeBean);      // 找下一站站點
+                            comeTime_go = getComeTime(comeTime_go, comeTimeBean, arriveStop_go);      // 找抵達時間
+                            break;
+                        case 2:
+                            if(arriveStop_back.equals("-1") || arriveStop_back.equals("-2")){
+                                continue;
+                            }
+
+                            nextStop_back = getNextStop(nextStop_back, comeTime_back, comeTimeBean);        // 找下一站站點
+                            comeTime_back = getComeTime(comeTime_back, comeTimeBean, arriveStop_back);      // 找抵達時間
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                timeList.add(routeId);
+                timeList.add(comeTime_go);
+                timeList.add(nextStop_go);
+                timeList.add(comeTime_back);
+                timeList.add(nextStop_back);
+                timeList.add(arriveStop_go);
+                timeList.add(arriveStop_back);
+
+                routeList.add(timeList);
+            }
+
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = routeList;
+            FavoriteActivity.handler.handleMessage(msg);
+
+        }catch (Exception e){
+            Log.e(TAG,"dealComeTime() 解析 json 失敗");
+            e.printStackTrace();
+        }
+
+    }
+
+    private String getComeTime(String comeTime, ComeTimeBean comeTimeBean, String arriveStop){
+        if( comeTime.equals("") ){
+            if( arriveStop.equals(comeTimeBean.getStopName()) ){
+                String value = comeTimeBean.getValue();
+                if( value.equals("null") ){
+                    comeTime = comeTimeBean.getComeTime();
+                }else if( value.equals("-3") ){
+                    comeTime = "末班已過";
+                }else{
+                    comeTime = value;
+                }
+            }
+        }
+        return comeTime;
     }
 
 

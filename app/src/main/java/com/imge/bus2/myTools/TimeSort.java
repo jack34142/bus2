@@ -6,7 +6,7 @@ import java.util.List;
 
 public class TimeSort {
     private List<List<String>> routeList;
-    private int a, b;
+    private int a, b, c;
 
     public TimeSort(List<List<String>> routeList, int goBack) {
         super();
@@ -14,12 +14,14 @@ public class TimeSort {
 
         switch (goBack){
             case 1:
-                a = 1;      // comeTime_start
-                b = 2;      // nextStop_start
+                a = 1;      // comeTime_go
+                b = 2;      // nextStop_go
+                c = 5;      // arriveStop_go
                 break;
             case 2:
-                a = 3;      // comeTime_end
-                b = 4;      // nextStop_end
+                a = 3;      // comeTime_back
+                b = 4;      // nextStop_back
+                c = 6;      // arriveStop_back
                 break;
         }
     }
@@ -37,11 +39,13 @@ public class TimeSort {
             String routeId = timeList.get(0);
             String comeTime = timeList.get(a);
             String nextStop = timeList.get(b);
+            String arriveStop = timeList.get(c);
 
             timeList = new ArrayList<>();
             timeList.add(routeId);
             timeList.add(comeTime);
             timeList.add(nextStop);
+            timeList.add(arriveStop);
 
             if (comeTime.length() == 5){        // 尚未發車，下一班時間
                 wait.add(timeList);

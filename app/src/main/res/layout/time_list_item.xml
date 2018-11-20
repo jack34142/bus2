@@ -1,38 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/timeList_value"
-        android:layout_width="84dp"
-        android:layout_height="wrap_content"
-        android:paddingLeft="6dp"
-        android:text="到站時間"
-        android:textSize="18sp"/>
-
-    <TextView
-        android:id="@+id/timeList_nameZh"
+    <LinearLayout
+        android:id="@+id/timeItem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingLeft="6dp"
-        android:paddingRight="8dp"
-        android:text="路線名稱"
-        android:textSize="18sp"/>
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/timeList_nextStop"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.68"
-        android:paddingLeft="6dp"
-        android:text="當前位置"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/timeList_value"
+            android:layout_width="84dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="6dp"
+            android:text="到站時間"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/timeList_nameZh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="路線名稱"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/timeList_nextStop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.61"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="6dp"
+            android:text="當前位置"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+    <ImageButton
+        android:id="@+id/timeList_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:paddingRight="6dp"
+        android:paddingLeft="7dp"
+        android:background="#00000000"
+        app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
+
 
 </LinearLayout>

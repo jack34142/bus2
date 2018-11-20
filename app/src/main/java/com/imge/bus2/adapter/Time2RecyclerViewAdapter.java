@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import com.imge.bus2.R;
 import java.util.List;
@@ -49,15 +50,16 @@ public class Time2RecyclerViewAdapter extends RecyclerView.Adapter {
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         TextView timeList_value, timeList_nameZh, timeList_nextStop;
-        View view;
+        ImageButton timeList_favorite;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            view = itemView;
             timeList_value = itemView.findViewById(R.id.timeList_value);
             timeList_nameZh = itemView.findViewById(R.id.timeList_nameZh);
             timeList_nextStop = itemView.findViewById(R.id.timeList_nextStop);
             timeList_nextStop.setVisibility(View.GONE);
+            timeList_favorite = itemView.findViewById(R.id.timeList_favorite);
+            timeList_favorite.setVisibility(View.GONE);
         }
     }
 

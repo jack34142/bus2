@@ -18,12 +18,12 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TimeFragment extends Fragment {
-    private Activity activity;
-    private List<List<String>> routeList;       // 選擇的路線
-    private int goBack;     // 去或返
-    private RecyclerView timeRecyclerView;      // 列表物件
-    private TimeRecyclerViewAdapter adapter;
+public abstract class TimeFragment extends Fragment {
+    protected Activity activity;
+    protected List<List<String>> routeList;       // 選擇的路線
+    protected int goBack;     // 去或返
+    protected RecyclerView timeRecyclerView;      // 列表物件
+    protected TimeRecyclerViewAdapter adapter;
 
     public TimeFragment() {
         // Required empty public constructor
@@ -36,20 +36,7 @@ public class TimeFragment extends Fragment {
     }
 
     // 更新列表用
-    public void updateAdapter(List<List<String>> routeList){
-
-        // 依照抵達時間重新排序
-        TimeSort timeSort = new TimeSort(routeList, goBack);
-        routeList = timeSort.group();
-
-        if(adapter == null){
-            adapter = new TimeRecyclerViewAdapter(activity, routeList, goBack);
-            timeRecyclerView.setAdapter(adapter);
-        }else{
-            adapter.updateData(routeList);
-            adapter.notifyDataSetChanged();
-        }
-    }
+    public abstract void updateAdapter(List<List<String>> routeList);
 
     // initial View
     @Override

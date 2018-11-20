@@ -63,6 +63,9 @@ public class Time2Activity extends AppCompatActivity {
 
         routeId = intent.getStringExtra("routeId");
         goBack = intent.getIntExtra("goBack", 0);
+
+        String title = intent.getStringExtra("title");
+        setTitle(title);
     }
 
     // 下載資料

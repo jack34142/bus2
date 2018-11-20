@@ -10,7 +10,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     // 資料庫名稱
     private static final String DATABASE_NAME = "mydata.db";
     // 資料庫版本，資料結構改變的時候要更改這個數字，通常是加一
-    private static final int VERSION = 1;
+    private static final int VERSION = 5;
     // 資料庫物件，固定的欄位變數
     private static SQLiteDatabase db;
 
@@ -45,16 +45,21 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.execSQL(BusStopDAO.CREATE_TABLE);
         db.execSQL(RouteNameDAO.CREATE_TABLE);
         db.execSQL(RouteStopsDAO.CREATE_TABLE);
+        db.execSQL(FavoriteDAO.CREATE_TABLE);
     }
 
     // 如果db文件存在，並且當前版本號高於上次創建或升級時的版本號，會調用onUpgrade()方法
     // 由於原本的資料表存在，所以要先刪除再創建
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // 刪除原有的表格
-        db.execSQL("DROP TABLE IF EXISTS " + BusStopDAO.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + RouteNameDAO.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + RouteStopsDAO.TABLE_NAME);
+        // Version==5 新增 FavoriteDAO
+        if (oldVersion < newVersion){
+//            db.execSQL("DROP TABLE IF EXISTS " + BusStopDAO.TABLE_NAME);
+//            db.execSQL("DROP TABLE IF EXISTS " + RouteNameDAO.TABLE_NAME);
+//            db.execSQL("DROP TABLE IF EXISTS " + RouteStopsDAO.TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + FavoriteDAO.TABLE_NAME);
+        }
+
         // 呼叫onCreate建立新版的表格
         onCreate(db);
     }
